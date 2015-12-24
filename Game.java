@@ -194,9 +194,24 @@ class GameObject extends GameCanvas implements Comparable<GameObject>
 	public static enum Direction{CENTER, RIGHT, LEFT, UP, DOWN}//物件移動方向，CENTER代表不動
 	Direction direction = Direction.CENTER;//物件移動方向
 	public void setPriority(int a){priority = a;}
-	public void setPosition(int x, int y){this.x = x; this.y = y;}
+	public void setPosition(int x, int y){this.x = x; this.y = y;}//名字跟setLocation區隔，因為有繼承Canvas，可能會用到
 	public void setDirection(Direction d){direction = d;}
-	
+	public int getAlpha(int x, int y)//取得該座標點的(偽)Alpha值
+	{
+		return (img.getRGB(x, y) >> 24);	//BufferedImage的getRGB回傳的color model
+		                                    //是ARGB，從MSB開始算8bits代表Alpha值，
+											//所以右移24bits取得Alpha值
+											//(沒有很確定，但可行所以應該沒錯，不過有位元補位的問題，
+											//所以其實只能用來判斷是否為0(即透明))
+	}
+	public int scalingBackWidth(int n)		//根據目前繪製用的圖案大小和原圖大小之間的比例
+	{                                       //去將一個長度放大回該長度在原圖中的大小  
+		return (int)(n*img.getWidth()/width);
+	}
+	public int scalingBackHeight(int n)
+	{
+		return (int)(n*img.getHeight()/height);
+	}
 	// public void show1(){System.out.println(priority);}
 	
 	public int compareTo(GameObject go)//將繪圖優先權設為排序依據

@@ -7,7 +7,7 @@ import java.awt.image.*;
 class Pacman extends GameObject
 {
 	private int mouthTop = 300;
-	private int mouthButtom = 30;
+	private int mouthBottom = 30;
 	
 	public Pacman()
 	{
@@ -15,7 +15,7 @@ class Pacman extends GameObject
 		img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = img.createGraphics();
 		g2d.setColor(Color.yellow);
-		g2d.fillArc(0, 0, width, height, mouthButtom, mouthTop);
+		g2d.fillArc(0, 0, width, height, mouthBottom, mouthTop);
 		setPriority(2);
 	}
 	public void paintCanvas(Graphics g)
@@ -27,19 +27,19 @@ class Pacman extends GameObject
 	{
 		g.drawImage(img, x, y, width, height, this);
 	}
-	public static void main(String args[])
-	{
+	// public static void main(String args[])
+	// {
 		
-		Frame frm = new Frame();
-		Canvas c = new Canvas();
-		frm.setSize(600, 600);
+		// Frame frm = new Frame();
+		// Canvas c = new Canvas();
+		// frm.setSize(600, 600);
 		
-		frm.add(c);
-		c.setBackground(Color.black);
-		Pacman pac = new Pacman();
+		// frm.add(c);
+		// c.setBackground(Color.black);
+		// Pacman pac = new Pacman();
+		// pac.setBackground(Color.pink);
+		// frm.add(pac);
 		
-		frm.add(pac);
-		
-		frm.setVisible(true);
-	}
+		// frm.setVisible(true);
+	// }
 }

@@ -31,7 +31,11 @@ class Ghost extends GameObject
 			System.out.println("ghost missed");*/
 		move();
 		g.drawImage(img, x, y, width, height, this);
-	} 
+	}
+	public void paint(Graphics g)
+	{
+		g.drawImage(img, x, y, this);
+	}
 	public void setDirection(Direction d)
 	{
 		direction = d;
