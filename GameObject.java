@@ -46,7 +46,7 @@ class GameObject extends GameCanvas implements Comparable<GameObject>, General
 		/*if(img == null)
 			System.out.println("ghost missed");*/
 		move();		//先呼叫各自的move()
-		g.drawImage(img, (int)x, (int)y, width, height, this);//預設直接使用xy和width, height繪圖
+		g.drawImage(img, x, y, width, height, this);//預設直接使用xy和width, height繪圖
 	}
 	public void paint(Graphics g)
 	{

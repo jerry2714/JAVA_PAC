@@ -11,11 +11,12 @@ interface Initialize
 	public void init();
 	public void setFrameSize(int width, int height);//為了使繪圖區大小在程式開始時跟視窗一致(世界麻煩，目前想不到好一點的方法)
 }
-interface General	//通用變數
+interface General	//通用常數
 {
 	Color transparent = new Color(0, 0, 0, 0);//透明色
+	GameStateControl gscontrol = new GameStateControl();
 }
-class Game extends Panel implements Initialize, KeyListener
+class Game extends Panel implements Initialize, KeyListener, General
 {
 	GameLoop gl = new GameLoop();
 	Ghost ghost1 = new Ghost("src\\images\\Ghost1.png");
@@ -62,11 +63,7 @@ class Game extends Panel implements Initialize, KeyListener
 	}
 	public void gameStart()
 	{
-		// if(gl.getCanvas().isVisible())
-		// {
-			// System.out.println("true");
-			// System.out.println(gl.getCanvas().getCanvasWidth());
-		// }
+		
 		this.requestFocus();
 		// timer.purge();
 		//timer.scheduleAtFixedRate(gl, 0, 10);
@@ -106,7 +103,39 @@ class Game extends Panel implements Initialize, KeyListener
 	}
 	public void keyTyped(KeyEvent e){}
 }
-class GameLoop extends TimerTask implements Initialize //基本上是繪圖迴圈
+class GameStateControl	//全體狀態以及各種狀態查看、切換等等方法，
+{                        //interface General裡會有一個instance供所遊戲相關者使用
+	int score;
+	enum GameState{COMMON, GAME_OVER, GAME_PAUSE}//遊戲本體狀態
+	enum PacmanState{COMMON, KILLED}//小精靈狀態
+	enum GhostState{COMMON, SHOCKED}//全體幽靈狀態
+	
+	GameState game;
+	PacmanState pac;
+	GhostState ghost;
+	
+	GameStateControl(){init();}
+	void init()
+	{
+		score = 0;
+		game = GameState.GAME_PAUSE;
+		pac = PacmanState.COMMON;
+		ghost = GhostState.COMMON;
+	}
+	
+	//遊戲暫停系列
+	void pause(){game = GameState.GAME_PAUSE;}
+	boolean isPause()
+	{
+		if(game == GameState.COMMON)
+			return false;
+		else 
+			return true;
+	}
+	void resume(){game = GameState.COMMON;}
+	
+}
+class GameLoop extends TimerTask implements Initialize, General //基本上是遊戲迴圈
 {
 	static GameCanvas canvas = new GameCanvas();
 	LinkedList<GameObject> drawList = new LinkedList<GameObject>();//存放所有遊戲中物件的串列
@@ -114,7 +143,8 @@ class GameLoop extends TimerTask implements Initialize //基本上是繪圖迴圈
 	
 	LinkedList<GameObject> movingList = new LinkedList<GameObject>();//存放遊戲中會移動的物件的串列
 	Iterator<GameObject> movingListItr;//list的Iterator
-	boolean isRunning = false;
+	
+	
 	
 	HitDetecter hd = new HitDetecter();
 	public void setFrameSize(int width, int height)
@@ -146,24 +176,22 @@ class GameLoop extends TimerTask implements Initialize //基本上是繪圖迴圈
 	} 
 	public void run()
 	{
-		if(isRunning)
+		if(!gscontrol.isPause())
 		{
 			listSort();
 			drawListItr = drawList.iterator();
 			while(drawListItr.hasNext())
-			{
 				canvas.draw(drawListItr.next());
-			}
 			canvas.update(canvas.getGraphics());
 			hd.run();
 		}
 	}
 	public void pauseSwitch()
 	{
-		if(isRunning)
-			isRunning = false;
+		if(gscontrol.isPause())
+			gscontrol.resume();
 		else
-			isRunning = true;
+			gscontrol.pause();
 	}
 	class HitDetecter extends Thread
 	{
@@ -218,7 +246,7 @@ class GameLoop extends TimerTask implements Initialize //基本上是繪圖迴圈
 						o2 = itr2.next();
 						if(hitDetect(o1, o2) && o1 != o2)//註1:有o1==o2的問題，浪費時間
 						{
-							
+							pauseSwitch();
 						}
 						
 					}
