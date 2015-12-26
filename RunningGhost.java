@@ -9,13 +9,13 @@ public class RunningGhost extends Frame
 {
 	public RunningGhost(){}
 	public RunningGhost(String str){super(str);}
-	static Ghost ghost1 = new Ghost("src\\images\\Ghost1.png");
-	static Ghost ghost2 = new Ghost("src\\images\\Ghost2.png");
+	
+	
 	static Game game = new Game();
 	public static void main(String args[])
 	{
 		RunningGhost frm = new RunningGhost("Running Ghost");
-		
+		frm.setResizable(false);
 		
 		
 		
@@ -43,6 +43,11 @@ public class RunningGhost extends Frame
 			game.gameExit();
 			frm.dispose();
 			
+		}
+		public void windowActivated(WindowEvent e)
+		{
+			Frame frm = (Frame)e.getSource();
+			game.requestFocus();
 		}
 	}
 }

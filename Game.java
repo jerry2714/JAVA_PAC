@@ -6,16 +6,21 @@ import java.io.*;
 import javax.imageio.*;
 import java.util.*;
 
-interface Initialize	//為了使繪圖區大小在程式開始時跟視窗一致(世界麻煩，目前想不到好意點的方法)
+interface Initialize	
 {
 	public void init();
-	public void setFrameSize(int width, int height);
+	public void setFrameSize(int width, int height);//為了使繪圖區大小在程式開始時跟視窗一致(世界麻煩，目前想不到好一點的方法)
 }
-class Game extends Panel implements Initialize
+interface General	//通用變數
+{
+	Color transparent = new Color(0, 0, 0, 0);//透明色
+}
+class Game extends Panel implements Initialize, KeyListener
 {
 	GameLoop gl = new GameLoop();
 	Ghost ghost1 = new Ghost("src\\images\\Ghost1.png");
 	Ghost ghost2 = new Ghost("src\\images\\Ghost2.png");
+	Pacman pacman = new Pacman();
 	Background bg = new Background();
 	int frameWidth, frameHeight;
 	
@@ -35,16 +40,25 @@ class Game extends Panel implements Initialize
 	{
 		setFrameSize(getWidth(), getHeight());
 		gl.init();
-		gl.addToList(ghost1);
-		gl.addToList(ghost2);
-		gl.addToList(bg);
-		ghost1.setDirection(GameObject.Direction.UP);
-		ghost2.setDirection(GameObject.Direction.UP);
+		gl.addToDrawList(ghost1);
+		gl.addToDrawList(ghost2);
+		gl.addToDrawList(pacman);
+		gl.addToDrawList(bg);
+		
+		gl.addToMovingList(ghost1);
+		gl.addToMovingList(ghost2);
+		gl.addToMovingList(pacman);
+		
+		ghost1.setDirection(GameObject.Direction.CENTER);
+		ghost2.setDirection(GameObject.Direction.CENTER);
+		pacman.setDirection(GameObject.Direction.CENTER);
+		pacman.setPosition(50, 50);
 		bg.init();
 		ghost2.setPosition(300, 500);
 		ghost1.setPosition(600, 500);
 		
-		this.addKeyListener(new KeyLis());
+		
+		this.addKeyListener(this);
 	}
 	public void gameStart()
 	{
@@ -55,7 +69,8 @@ class Game extends Panel implements Initialize
 		// }
 		this.requestFocus();
 		// timer.purge();
-		timer.scheduleAtFixedRate(gl, 0, 1);
+		//timer.scheduleAtFixedRate(gl, 0, 10);
+		timer.schedule(gl, 0, 10);
 		gl.pauseSwitch();
 	}
 	public void gameExit()
@@ -63,73 +78,84 @@ class Game extends Panel implements Initialize
 		timer.cancel();
 	}
 	
-	class KeyLis extends KeyAdapter
+	
+	public void keyPressed(KeyEvent e)
 	{
-		public void keyPressed(KeyEvent e)
+		int k = e.getKeyCode();
+		switch(k)
 		{
-			int k = e.getKeyCode();
-			switch(k)
-			{
-				case KeyEvent.VK_UP:
-					ghost1.setDirection(GameObject.Direction.UP);
-					break;
-				case KeyEvent.VK_DOWN:
-					ghost1.setDirection(GameObject.Direction.DOWN);
-					break;
-				case KeyEvent.VK_LEFT:
-					ghost1.setDirection(GameObject.Direction.LEFT);
-					break;
-				case KeyEvent.VK_RIGHT:
-					ghost1.setDirection(GameObject.Direction.RIGHT);
-					break;
-				case KeyEvent.VK_ESCAPE:
-					gl.pauseSwitch();
-					break;
-			}
-		}
-		public void keyReleased(KeyEvent e)
-		{
+			case KeyEvent.VK_UP:
+				pacman.setDirection(GameObject.Direction.UP);
+				break;
+			case KeyEvent.VK_DOWN:
+				pacman.setDirection(GameObject.Direction.DOWN);
+				break;
+			case KeyEvent.VK_LEFT:
+				pacman.setDirection(GameObject.Direction.LEFT);
+				break;
+			case KeyEvent.VK_RIGHT:
+				pacman.setDirection(GameObject.Direction.RIGHT);
+				break;
+			case KeyEvent.VK_ESCAPE:
+				gl.pauseSwitch();
+				break;
 		}
 	}
+	public void keyReleased(KeyEvent e)
+	{
+	}
+	public void keyTyped(KeyEvent e){}
 }
 class GameLoop extends TimerTask implements Initialize //基本上是繪圖迴圈
 {
 	static GameCanvas canvas = new GameCanvas();
-	LinkedList<GameObject> list = new LinkedList<GameObject>();//存放所有遊戲中物件的串列
-	Iterator<GameObject> listItr;//list的Iterator
+	LinkedList<GameObject> drawList = new LinkedList<GameObject>();//存放所有遊戲中物件的串列
+	Iterator<GameObject> drawListItr;//list的Iterator
+	
+	LinkedList<GameObject> movingList = new LinkedList<GameObject>();//存放遊戲中會移動的物件的串列
+	Iterator<GameObject> movingListItr;//list的Iterator
 	boolean isRunning = false;
+	
+	HitDetecter hd = new HitDetecter();
 	public void setFrameSize(int width, int height)
 	{
 		canvas.setFrameSize(width, height);
 	}
 	public void init()
 	{
-		list.clear();
+		drawList.clear();
 		canvas.init();
+		canvas.setEnabled(false);
 	}
 	public GameCanvas getCanvas()
 	{
 		return canvas;
 	}
-	public void addToList(GameObject go)//將一個GameObject加入串列
+	public void addToDrawList(GameObject go)//將一個GameObject加入串列
 	{
-		list.add(go);
+		drawList.add(go);
+	}
+	public void addToMovingList(GameObject go)//將一個GameObject加入串列
+	{
+		movingList.add(go);
 	}
 	public void listSort()//將list中的元素根據優先權進行排序
 	{
-		Collections.sort(list);
+		Collections.sort(drawList);
+		Collections.sort(movingList);
 	} 
 	public void run()
 	{
 		if(isRunning)
 		{
 			listSort();
-			listItr = list.iterator();
-			while(listItr.hasNext())
+			drawListItr = drawList.iterator();
+			while(drawListItr.hasNext())
 			{
-				canvas.draw(listItr.next());
+				canvas.draw(drawListItr.next());
 			}
 			canvas.update(canvas.getGraphics());
+			hd.run();
 		}
 	}
 	public void pauseSwitch()
@@ -139,8 +165,73 @@ class GameLoop extends TimerTask implements Initialize //基本上是繪圖迴圈
 		else
 			isRunning = true;
 	}
-
-	
+	class HitDetecter extends Thread
+	{
+		public boolean hitDetect(GameObject o1, GameObject o2)
+		{
+			int x1, y1;
+			int x2, y2;
+			int w, h;
+			Rectangle r = o1.getRect().intersection(o2.getRect());
+			if(!r.isEmpty())
+			{
+				x1 = (int)(r.getX()-o1.getx());
+				x2 = (int)(r.getX()-o2.getx());
+				y1 = (int)(r.getY()-o1.gety());
+				y2 = (int)(r.getY()-o2.gety());
+				w = (int)r.getWidth();
+				h = (int)r.getHeight();
+				
+				int tx1, ty1, tx2, ty2;
+				ty1 = y1; ty2 = y2;
+				for(int i = 0; i < h; i++)
+				{
+					tx1 = x1; tx2 = x2;
+					for(int j = 0; j < w; j++)
+					{
+						if(o1.getSymbolAlpha(tx1, ty1) != 0 && o2.getSymbolAlpha(tx2, ty2) != 0)
+							return true;
+						tx1++; tx2++;
+					}
+					ty1++; ty2++;
+				}
+			}
+			return false;
+		}
+		public void run()//iterate過程需修改(註1)
+		{
+			Iterator<GameObject> itr1, itr2;
+			itr1 = movingList.iterator();
+			int j = 0;
+			GameObject o1, o2;
+			while(itr1.hasNext())
+			{
+				j++;
+				itr2 = movingList.iterator();
+				try
+				{
+					for(int i = 0; i < j; i++)
+						itr2.next();
+					o1 = itr1.next();
+					while(itr2.hasNext())
+					{
+						o2 = itr2.next();
+						if(hitDetect(o1, o2) && o1 != o2)//註1:有o1==o2的問題，浪費時間
+						{
+							
+						}
+						
+					}
+				}
+				catch(NoSuchElementException e)
+				{
+					System.out.println("movingList iterating error");
+				}
+			}
+			// System.out.println("over");
+			
+		}
+	}
 }
 class GameCanvas extends Canvas implements Initialize
 {
@@ -162,6 +253,7 @@ class GameCanvas extends Canvas implements Initialize
 	public int getCanvasWidth(){return getWidth();}
 	public int getCanvasHeight(){return getHeight();}
 	public void paintCanvas(Graphics g){}//讓所有子類別對g2d進行操作(繪圖)
+	//public void paintCanvas(Graphics2D g){}//讓所有子類別對g2d進行操作(繪圖)
 	
 	
 	public void update(Graphics g)
@@ -182,40 +274,5 @@ class GameCanvas extends Canvas implements Initialize
 	{
 		go.paintCanvas(g2d);
 		//System.out.println("draw");
-	}
-}
-
-class GameObject extends GameCanvas implements Comparable<GameObject>
-{
-	private int priority;//繪圖優先權(最大的最後繪製，所以蓋在最上面)
-	BufferedImage img;	//此物件目前的完整圖形
-	int ox, oy, x, y;	//上一次座標、新座標
-	int width, height;	//長寬
-	public static enum Direction{CENTER, RIGHT, LEFT, UP, DOWN}//物件移動方向，CENTER代表不動
-	Direction direction = Direction.CENTER;//物件移動方向
-	public void setPriority(int a){priority = a;}
-	public void setPosition(int x, int y){this.x = x; this.y = y;}//名字跟setLocation區隔，因為有繼承Canvas，可能會用到
-	public void setDirection(Direction d){direction = d;}
-	public int getAlpha(int x, int y)//取得該座標點的(偽)Alpha值
-	{
-		return (img.getRGB(x, y) >> 24);	//BufferedImage的getRGB回傳的color model
-		                                    //是ARGB，從MSB開始算8bits代表Alpha值，
-											//所以右移24bits取得Alpha值
-											//(沒有很確定，但可行所以應該沒錯，不過有位元補位的問題，
-											//所以其實只能用來判斷是否為0(即透明))
-	}
-	public int scalingBackWidth(int n)		//根據目前繪製用的圖案大小和原圖大小之間的比例
-	{                                       //去將一個長度放大回該長度在原圖中的大小  
-		return (int)(n*img.getWidth()/width);
-	}
-	public int scalingBackHeight(int n)
-	{
-		return (int)(n*img.getHeight()/height);
-	}
-	// public void show1(){System.out.println(priority);}
-	
-	public int compareTo(GameObject go)//將繪圖優先權設為排序依據
-	{
-		return this.priority - go.priority;
 	}
 }

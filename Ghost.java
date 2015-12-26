@@ -3,10 +3,13 @@ import java.awt.event.*;
 import javax.imageio.*;
 import java.io.*;
 import java.awt.image.*;
+
+//幽靈
 class Ghost extends GameObject
 {
-	private BufferedImage body;
-	private BufferedImage eye;
+	private BufferedImage body;	//身體
+	private BufferedImage eye;	//眼睛
+	//img = 完整的ghost = 身體加眼睛
 	public Ghost(String str)
 	{
 		try
@@ -21,21 +24,15 @@ class Ghost extends GameObject
         }
 		// setSize(50, 50);
 		ox = oy = x = y = 0;
-		width = height = 150;
+		width = height = 50;
 		//System.out.println(""+isDoubleBuffered());
 		setPriority(3);
+		symbol = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = symbol.createGraphics();
+		g2d.drawImage(body, 0, 0, width, height, this);
 	}
-	public void paintCanvas(Graphics g)
-	{
-		/*if(img == null)
-			System.out.println("ghost missed");*/
-		move();
-		g.drawImage(img, x, y, width, height, this);
-	}
-	public void paint(Graphics g)
-	{
-		g.drawImage(img, x, y, this);
-	}
+	
+	
 	public void setDirection(Direction d)
 	{
 		direction = d;
@@ -57,6 +54,7 @@ class Ghost extends GameObject
 				g2d.drawImage(eye, 153, 200, this);
 				break;
 		}
+		//img = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
 	}
 	public void move()
 	{
@@ -80,5 +78,6 @@ class Ghost extends GameObject
 				break;
 			default:
 		}
+		rect.setBounds(x, y, width, height);
 	}
 }
