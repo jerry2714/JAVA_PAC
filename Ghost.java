@@ -26,12 +26,13 @@ class Ghost extends GameObject
 		ox = oy = x = y = 0;
 		width = height = 50;
 		//System.out.println(""+isDoubleBuffered());
-		setPriority(3);
+		setPriority(Priority.GHOST);
 		symbol = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = symbol.createGraphics();
 		g2d.drawImage(body, 0, 0, width, height, this);
+		setId(Number.GHOST);
 	}
-	
+	public void hitReact(Number num){}
 	
 	public void setDirection(Direction d)
 	{
@@ -56,7 +57,7 @@ class Ghost extends GameObject
 		}
 		//img = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
 	}
-	public void move()
+	public void action()
 	{
 		oy = y;
 		ox = x;

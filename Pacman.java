@@ -8,17 +8,19 @@ import java.awt.image.*;
 class Pacman extends GameObject
 {
 	Graphics2D g2d;
-		
-	private int upperLip = 40;	//小精靈上嘴唇跟x軸夾角
-	private int bodyAngle = 280;//小精靈從upperLip開始算的角度(為了從upperLip開始逆時針畫出小精靈身體)
+	
+	private final int UPPER_LIP = 40;
+	private final int BODY_ANGLE = 280;
+	private int upperLip = UPPER_LIP;	//小精靈上嘴唇跟x軸夾角
+	private int bodyAngle = BODY_ANGLE;//小精靈從upperLip開始算的角度(為了從upperLip開始逆時針畫出小精靈身體)
 	private double theta = 0;
 	double temp = 0;
-	double speed = 1;	//移動速度(暫定speed，目前移動作法為 x+=speed這種，視窗resize就會影響移動速度)
-	double mouthMotionSpeed = 2;//小精靈嘴巴開合速度(作法跟上面類似，問題也一樣)
+	double speed = 5;	//移動速度(暫定speed，目前移動作法為 x+=speed這種，視窗resize就會影響移動速度)
+	double mouthMotionSpeed = 4;//小精靈嘴巴開合速度(作法跟上面類似，問題也一樣)
 	//int bigW, bigH;
 	public Pacman()
 	{
-		width = height = 50;
+		width = height = 30;
 		// bigW = width*50;
 		// bigH = height*50;
 		img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -26,11 +28,12 @@ class Pacman extends GameObject
 		g2d.setBackground(transparent);//Color4參數，最後一個是Alpha
 		g2d.setColor(Color.yellow);
 		g2d.fillArc(0, 0, width, height, upperLip, bodyAngle);//畫出小精靈
-		setPriority(2);
+		setPriority(Priority.PACMAN);
 		
 		symbol = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = symbol.createGraphics();
 		g.fillOval(0, 0, width, height);
+		setId(Number.PACMAN);
 	}
 	public void drawPacman()//重畫小精靈(改方向和嘴巴張開角度)
 	{
@@ -40,16 +43,11 @@ class Pacman extends GameObject
 		g2d.rotate(-theta, width/2, height/2);
 	}
 	
-	// public void paintCanvas(Graphics g)
-	// {
-		// move();
-		// g.drawImage(symbol,x, y, this);
-	// }
 	public void setDirection(Direction d)
 	{
 		direction = d;
 		
-		switch(d)
+		switch(d) //轉嘴巴的角度
 		{
 			case UP:
 				theta = -90.0/180*Math.PI;
@@ -67,40 +65,98 @@ class Pacman extends GameObject
 		}
 	}
 	
-	public void move()
+	public void action()
 	{
-		upperLip -= mouthMotionSpeed;
-		bodyAngle += mouthMotionSpeed*2;
-		if(upperLip == 0 || upperLip == 40)
-			mouthMotionSpeed = -mouthMotionSpeed;
-		drawPacman();
-		switch(direction)
+		switch(gscontrol.pac)
 		{
-			case CENTER:
+			case COMMON:
+				upperLip -= mouthMotionSpeed;
+				bodyAngle += mouthMotionSpeed*2;
+				if(upperLip <= 0 || upperLip >= 40)
+				{
+					mouthMotionSpeed = -mouthMotionSpeed;
+					if(upperLip < 0)
+					{
+						upperLip = 0;
+						bodyAngle = 0;
+					}
+					else if(upperLip > UPPER_LIP)
+					{
+						upperLip = UPPER_LIP;
+						bodyAngle = BODY_ANGLE;
+					}
+				}
+				
+				switch(direction)
+				{
+					case CENTER:
+						break;
+					case UP:
+						temp = y;
+						temp -= speed;
+						y = (int)temp;
+						break;
+					case DOWN:
+						temp = y;
+						temp += speed;
+						y = (int)temp;
+						break;
+					case LEFT:
+						temp = x;
+						temp -= speed;
+						x = (int)temp;
+						break;
+					case RIGHT:
+						temp = x;
+						temp += speed;
+						x = (int)temp;
+						break;
+					default:
+				}
 				break;
-			case UP:
-				temp = y;
-				temp -= speed;
-				y = (int)temp;
+			case KILLED:
+				if(!dying())
+				{
+					gscontrol.pacmanRetrive();
+					upperLip = UPPER_LIP;
+					bodyAngle = BODY_ANGLE;
+				}
 				break;
-			case DOWN:
-				temp = y;
-				temp += speed;
-				y = (int)temp;
-				break;
-			case LEFT:
-				temp = x;
-				temp -= speed;
-				x = (int)temp;
-				break;
-			case RIGHT:
-				temp = x;
-				temp += speed;
-				x = (int)temp;
-				break;
-			default:
 		}
+		drawPacman();
+		
 		rect.setBounds(x, y, width, height);
+	}
+	public boolean dying() //死掉的動畫，動畫還沒結束就return true，動畫結束了就return false
+	{
+		mouthMotionSpeed = 1;
+		bodyAngle -= mouthMotionSpeed;
+		if(bodyAngle == 0)
+			return false;
+		else
+			return true;
+	}
+	
+	public void hitReact(Number num)
+	{
+		switch(num)
+		{
+			case GHOST:
+				if(gscontrol.ghostIsShocked())
+				{}
+				else
+				{
+					gscontrol.pacmanKilled();
+				}
+				break;
+		}
+	}
+	
+	public void paintCanvas(Graphics g)
+	{
+		action();
+		g.drawImage(img, x, y, width, height, this);
+		
 	}
 	// public static void main(String args[])
 	// {

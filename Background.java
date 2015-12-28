@@ -13,13 +13,15 @@ class Background extends GameObject
 		g2d.setColor(Color.black);
 		g2d.fillRect(0, 0, img.getWidth(), img.getHeight());
 		System.out.println(img.getWidth()+" "+ img.getHeight());
-		setPriority(0);
+		setPriority(Priority.BACK_GROUND);
 	}
 	public void paintCanvas(Graphics g)
 	{
 		//System.out.println("bg");
 		g.drawImage(img, 0, 0, frameWidth, frameHeight, this);
 	}
+	public void action(){}
+	public void hitReact(Number num){}
 }
 class Foreground extends GameObject
 {
@@ -31,11 +33,14 @@ class Foreground extends GameObject
 		g2d.setBackground(transparent);
 		g2d.fillRect(0, 0, img.getWidth(), img.getHeight());
 		System.out.println(img.getWidth()+" "+ img.getHeight());
-		setPriority(10);
+		setPriority(Priority.FORE_GROUND);
 	}
 	public void paintCanvas(Graphics g)
 	{
 		//System.out.println("bg");
 		g.drawImage(img, 0, 0, frameWidth, frameHeight, this);
 	}
+	public void action(){}
+	public void hitReact(Number num){}
+	
 }

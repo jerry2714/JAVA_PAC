@@ -6,16 +6,7 @@ import java.io.*;
 import javax.imageio.*;
 import java.util.*;
 
-interface Initialize	
-{
-	public void init();
-	public void setFrameSize(int width, int height);//為了使繪圖區大小在程式開始時跟視窗一致(世界麻煩，目前想不到好一點的方法)
-}
-interface General	//通用常數
-{
-	Color transparent = new Color(0, 0, 0, 0);//透明色
-	GameStateControl gscontrol = new GameStateControl();
-}
+
 class Game extends Panel implements Initialize, KeyListener, General
 {
 	GameLoop gl = new GameLoop();
@@ -23,6 +14,7 @@ class Game extends Panel implements Initialize, KeyListener, General
 	Ghost ghost2 = new Ghost("src\\images\\Ghost2.png");
 	Pacman pacman = new Pacman();
 	Background bg = new Background();
+	Dot dot = new Dot();
 	int frameWidth, frameHeight;
 	
 	Timer timer = new Timer();
@@ -44,11 +36,13 @@ class Game extends Panel implements Initialize, KeyListener, General
 		gl.addToDrawList(ghost1);
 		gl.addToDrawList(ghost2);
 		gl.addToDrawList(pacman);
+		gl.addToDrawList(dot);
 		gl.addToDrawList(bg);
 		
 		gl.addToMovingList(ghost1);
 		gl.addToMovingList(ghost2);
 		gl.addToMovingList(pacman);
+		gl.addToMovingList(dot);
 		
 		ghost1.setDirection(GameObject.Direction.CENTER);
 		ghost2.setDirection(GameObject.Direction.CENTER);
@@ -57,8 +51,7 @@ class Game extends Panel implements Initialize, KeyListener, General
 		bg.init();
 		ghost2.setPosition(300, 500);
 		ghost1.setPosition(600, 500);
-		
-		
+		dot.changePos();
 		this.addKeyListener(this);
 	}
 	public void gameStart()
@@ -103,38 +96,7 @@ class Game extends Panel implements Initialize, KeyListener, General
 	}
 	public void keyTyped(KeyEvent e){}
 }
-class GameStateControl	//全體狀態以及各種狀態查看、切換等等方法，
-{                        //interface General裡會有一個instance供所遊戲相關者使用
-	int score;
-	enum GameState{COMMON, GAME_OVER, GAME_PAUSE}//遊戲本體狀態
-	enum PacmanState{COMMON, KILLED}//小精靈狀態
-	enum GhostState{COMMON, SHOCKED}//全體幽靈狀態
-	
-	GameState game;
-	PacmanState pac;
-	GhostState ghost;
-	
-	GameStateControl(){init();}
-	void init()
-	{
-		score = 0;
-		game = GameState.GAME_PAUSE;
-		pac = PacmanState.COMMON;
-		ghost = GhostState.COMMON;
-	}
-	
-	//遊戲暫停系列
-	void pause(){game = GameState.GAME_PAUSE;}
-	boolean isPause()
-	{
-		if(game == GameState.COMMON)
-			return false;
-		else 
-			return true;
-	}
-	void resume(){game = GameState.COMMON;}
-	
-}
+
 class GameLoop extends TimerTask implements Initialize, General //基本上是遊戲迴圈
 {
 	static GameCanvas canvas = new GameCanvas();
@@ -193,9 +155,9 @@ class GameLoop extends TimerTask implements Initialize, General //基本上是遊戲迴
 		else
 			gscontrol.pause();
 	}
-	class HitDetecter extends Thread
+	class HitDetecter //extends Thread
 	{
-		public boolean hitDetect(GameObject o1, GameObject o2)
+		public boolean hitDetect(GameObject o1, GameObject o2) //偵測物體碰撞
 		{
 			int x1, y1;
 			int x2, y2;
@@ -203,9 +165,9 @@ class GameLoop extends TimerTask implements Initialize, General //基本上是遊戲迴
 			Rectangle r = o1.getRect().intersection(o2.getRect());
 			if(!r.isEmpty())
 			{
-				x1 = (int)(r.getX()-o1.getx());
-				x2 = (int)(r.getX()-o2.getx());
+				x1 = (int)(r.getX()-o1.getx());//重疊區左上角在o1裡的座標
 				y1 = (int)(r.getY()-o1.gety());
+				x2 = (int)(r.getX()-o2.getx());//重疊區左上角在o2裡的座標
 				y2 = (int)(r.getY()-o2.gety());
 				w = (int)r.getWidth();
 				h = (int)r.getHeight();
@@ -215,13 +177,22 @@ class GameLoop extends TimerTask implements Initialize, General //基本上是遊戲迴
 				for(int i = 0; i < h; i++)
 				{
 					tx1 = x1; tx2 = x2;
+					try{
 					for(int j = 0; j < w; j++)
 					{
 						if(o1.getSymbolAlpha(tx1, ty1) != 0 && o2.getSymbolAlpha(tx2, ty2) != 0)
 							return true;
 						tx1++; tx2++;
 					}
-					ty1++; ty2++;
+					ty1++; ty2++;}
+					catch(NullPointerException e)
+					{
+						System.out.println(r.getX()+" "+o1.getx());
+						System.out.println(r.getY()+" "+o1.gety());
+						System.out.println(x1+" "+y1+" "+x2+" "+y2);
+						System.out.println(tx1+" "+ty1+" "+tx2+" "+ty2);
+						System.exit(0);
+					}
 				}
 			}
 			return false;
@@ -246,7 +217,8 @@ class GameLoop extends TimerTask implements Initialize, General //基本上是遊戲迴
 						o2 = itr2.next();
 						if(hitDetect(o1, o2) && o1 != o2)//註1:有o1==o2的問題，浪費時間
 						{
-							pauseSwitch();
+							o1.hitReact(o2.getId());
+							o2.hitReact(o1.getId());
 						}
 						
 					}
@@ -256,51 +228,7 @@ class GameLoop extends TimerTask implements Initialize, General //基本上是遊戲迴
 					System.out.println("movingList iterating error");
 				}
 			}
-			// System.out.println("over");
-			
 		}
 	}
 }
-class GameCanvas extends Canvas implements Initialize
-{
-	private static BufferedImage img = null;//繪圖用
-	private static Graphics2D g2d;//img的Graphic context
-	public static int frameWidth, frameHeight;
-	
-	public void setFrameSize(int width, int height)
-	{
-		frameWidth = width;
-		frameHeight = height;
-	}
-	public void init()//初始化，開始使用前必須呼叫
-	{
-		img = new BufferedImage(frameWidth, frameHeight, BufferedImage.TYPE_INT_ARGB);
-		g2d = img.createGraphics();
-		g2d.clearRect(0, 0, frameWidth, frameHeight);
-	}
-	public int getCanvasWidth(){return getWidth();}
-	public int getCanvasHeight(){return getHeight();}
-	public void paintCanvas(Graphics g){}//讓所有子類別對g2d進行操作(繪圖)
-	//public void paintCanvas(Graphics2D g){}//讓所有子類別對g2d進行操作(繪圖)
-	
-	
-	public void update(Graphics g)
-	{	
-		if(img == null)
-			init();
-		//System.out.println("update");
-		paint(g);
-	}
-	public void paint(Graphics g)
-	{
-		//setBackground(new Color(255, 0, 0));
-		//System.out.println("paint");
-		g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
-	}
-	
-	public void draw(GameObject go)
-	{
-		go.paintCanvas(g2d);
-		//System.out.println("draw");
-	}
-}
+
