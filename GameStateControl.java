@@ -9,6 +9,8 @@ class GameStateControl	//砰篈の贺篈琩ち传单单よ猭
 	PacmanState pac;
 	GhostState ghost;
 	
+	int pacX, pacY;
+	
 	GameStateControl(){init();}
 	void init()
 	{
@@ -43,4 +45,5 @@ class GameStateControl	//砰篈の贺篈琩ち传单单よ猭
 	//弘艶╰
 	void pacmanKilled(){pac = PacmanState.KILLED;}
 	void pacmanRetrive(){pac = PacmanState.COMMON;}
+	void pacPosUpdate(int x, int y){pacX = x; pacY = y;}
 }

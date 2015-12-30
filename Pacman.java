@@ -15,7 +15,7 @@ class Pacman extends GameObject
 	private int bodyAngle = BODY_ANGLE;//小精靈從upperLip開始算的角度(為了從upperLip開始逆時針畫出小精靈身體)
 	private double theta = 0;
 	double temp = 0;
-	double speed = 5;	//移動速度(暫定speed，目前移動作法為 x+=speed這種，視窗resize就會影響移動速度)
+	double speed = 3;	//移動速度(暫定speed，目前移動作法為 x+=speed這種，視窗resize就會影響移動速度)
 	double mouthMotionSpeed = 4;//小精靈嘴巴開合速度(作法跟上面類似，問題也一樣)
 	//int bigW, bigH;
 	public Pacman()
@@ -37,10 +37,11 @@ class Pacman extends GameObject
 	}
 	public void drawPacman()//重畫小精靈(改方向和嘴巴張開角度)
 	{
+		double t = theta;	// 避免theta亂掉(theta的改變和此函式出現在不同thread)
 		g2d.clearRect(0, 0, width, height);
-		g2d.rotate(theta, width/2, height/2);
+		g2d.rotate(t, width/2, height/2);
 		g2d.fillArc(0, 0, width, height, upperLip, bodyAngle);
-		g2d.rotate(-theta, width/2, height/2);
+		g2d.rotate(-t, width/2, height/2);
 	}
 	
 	public void setDirection(Direction d)
@@ -63,6 +64,7 @@ class Pacman extends GameObject
 				theta = Math.PI;
 				break;
 		}
+		System.out.println(theta);
 	}
 	
 	public void action()
@@ -126,6 +128,7 @@ class Pacman extends GameObject
 		drawPacman();
 		
 		rect.setBounds(x, y, width, height);
+		gscontrol.pacPosUpdate(x+width/2, y+height/2);
 	}
 	public boolean dying() //死掉的動畫，動畫還沒結束就return true，動畫結束了就return false
 	{

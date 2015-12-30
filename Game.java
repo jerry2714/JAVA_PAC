@@ -10,8 +10,8 @@ import java.util.*;
 class Game extends Panel implements Initialize, KeyListener, General
 {
 	GameLoop gl = new GameLoop();
-	Ghost ghost1 = new Ghost("src\\images\\Ghost1.png");
-	Ghost ghost2 = new Ghost("src\\images\\Ghost2.png");
+	Ghost ghost1 = new Ghost();
+	Ghost ghost2 = new Ghost();
 	Pacman pacman = new Pacman();
 	Background bg = new Background();
 	Dot dot = new Dot();
