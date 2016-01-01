@@ -126,7 +126,7 @@ class Pacman extends GameObject
 				break;
 		}
 		drawPacman();
-		
+		outOfAreaFix();
 		rect.setBounds(x, y, width, height);
 		gscontrol.pacPosUpdate(x+width/2, y+height/2);
 	}
@@ -151,6 +151,9 @@ class Pacman extends GameObject
 				{
 					gscontrol.pacmanKilled();
 				}
+				break;
+			case POWER_PELLET:
+				gscontrol.ghostShock();
 				break;
 		}
 	}

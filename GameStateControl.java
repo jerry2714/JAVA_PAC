@@ -44,6 +44,12 @@ class GameStateControl	//全體狀態以及各種狀態查看、切換等等方法，
 	
 	//小精靈系列
 	void pacmanKilled(){pac = PacmanState.KILLED;}
+	boolean pacmanIsKilled()
+	{
+		if(pac == PacmanState.KILLED)
+			return true;
+		else return false;
+	}
 	void pacmanRetrive(){pac = PacmanState.COMMON;}
 	void pacPosUpdate(int x, int y){pacX = x; pacY = y;}
 }

@@ -9,12 +9,13 @@ interface General	//通用常數
 	Color transparent = new Color(0, 0, 0, 0);//透明色
 	GameStateControl gscontrol = new GameStateControl();
 	
-	enum Number{PACMAN, GHOST, DOT}
+	enum Number{PACMAN, GHOST, DOT, POWER_PELLET}
 }
 enum Priority
 {
 	BACK_GROUND,
 	DOT,
+	POWER_PELLET,
 	SHOCKED_GHOST,
 	PACMAN,
 	GHOST,

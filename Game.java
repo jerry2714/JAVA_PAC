@@ -15,6 +15,7 @@ class Game extends Panel implements Initialize, KeyListener, General
 	Pacman pacman = new Pacman();
 	Background bg = new Background();
 	Dot dot = new Dot();
+	PowerPellet powerPellet = new PowerPellet();
 	int frameWidth, frameHeight;
 	
 	Timer timer = new Timer();
@@ -38,11 +39,13 @@ class Game extends Panel implements Initialize, KeyListener, General
 		gl.addToDrawList(pacman);
 		gl.addToDrawList(dot);
 		gl.addToDrawList(bg);
+		gl.addToDrawList(powerPellet);
 		
 		gl.addToMovingList(ghost1);
 		gl.addToMovingList(ghost2);
 		gl.addToMovingList(pacman);
 		gl.addToMovingList(dot);
+		gl.addToMovingList(powerPellet);
 		
 		ghost1.setDirection(GameObject.Direction.CENTER);
 		ghost2.setDirection(GameObject.Direction.CENTER);
@@ -52,6 +55,7 @@ class Game extends Panel implements Initialize, KeyListener, General
 		ghost2.setPosition(300, 500);
 		ghost1.setPosition(600, 500);
 		dot.changePos();
+		gscontrol.init();
 		this.addKeyListener(this);
 	}
 	public void gameStart()
