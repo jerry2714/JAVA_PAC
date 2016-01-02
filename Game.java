@@ -14,8 +14,10 @@ class Game extends Panel implements Initialize, KeyListener, General
 	Ghost ghost2 = new Ghost();
 	Pacman pacman = new Pacman();
 	Background bg = new Background();
+	Foreground fg = new Foreground();
 	Dot dot = new Dot();
 	PowerPellet powerPellet = new PowerPellet();
+	Score score = new Score();
 	int frameWidth, frameHeight;
 	
 	Timer timer = new Timer();
@@ -39,7 +41,9 @@ class Game extends Panel implements Initialize, KeyListener, General
 		gl.addToDrawList(pacman);
 		gl.addToDrawList(dot);
 		gl.addToDrawList(bg);
+		gl.addToDrawList(fg);
 		gl.addToDrawList(powerPellet);
+		gl.addToDrawList(score);
 		
 		gl.addToMovingList(ghost1);
 		gl.addToMovingList(ghost2);
@@ -52,6 +56,8 @@ class Game extends Panel implements Initialize, KeyListener, General
 		pacman.setDirection(GameObject.Direction.CENTER);
 		pacman.setPosition(50, 50);
 		bg.init();
+		fg.init();
+		score.init();
 		ghost2.setPosition(300, 500);
 		ghost1.setPosition(600, 500);
 		dot.changePos();
@@ -221,8 +227,8 @@ class GameLoop extends TimerTask implements Initialize, General //基本上是遊戲迴
 						o2 = itr2.next();
 						if(hitDetect(o1, o2) && o1 != o2)//註1:有o1==o2的問題，浪費時間
 						{
-							o1.hitReact(o2.getId());
-							o2.hitReact(o1.getId());
+							o1.hitReact(o2);
+							o2.hitReact(o1);
 						}
 						
 					}

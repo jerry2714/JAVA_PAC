@@ -1,55 +1,56 @@
 class GameStateControl	//全體狀態以及各種狀態查看、切換等等方法，
 {                        //interface General裡會有一個instance供所遊戲相關者使用
-	int score;
-	enum GameState{COMMON, GAME_OVER, GAME_PAUSE}//遊戲本體狀態
-	enum PacmanState{COMMON, KILLED}//小精靈狀態
-	enum GhostState{COMMON, SHOCKED}//全體幽靈狀態
+	public int score;
+	public int life;
+	public enum GameState{COMMON, GAME_OVER, GAME_PAUSE}//遊戲本體狀態
+	public enum PacmanState{COMMON, KILLED}//小精靈狀態
 	
-	GameState game;
-	PacmanState pac;
-	GhostState ghost;
 	
-	int pacX, pacY;
+	public GameState game;
+	public PacmanState pac;
+	public boolean ghostStateSwitch = false;
 	
-	GameStateControl(){init();}
-	void init()
+	public int pacX, pacY;
+	
+	public GameStateControl(){init();}
+	public void init()
 	{
 		score = 0;
+		life = 3;
 		game = GameState.GAME_PAUSE;
 		pac = PacmanState.COMMON;
-		ghost = GhostState.COMMON;
+		ghostStateSwitch = false;
 	}
 	
 	//遊戲暫停系列
-	void pause(){game = GameState.GAME_PAUSE;}
-	boolean isPause()
+	public void pause(){game = GameState.GAME_PAUSE;}
+	public boolean isPause()
 	{
 		if(game == GameState.COMMON)
 			return false;
 		else 
 			return true;
 	}
-	void resume(){game = GameState.COMMON;}
+	public void resume(){game = GameState.COMMON;}
 	
 	//鬼長太醜被自己嚇到系列
-	void ghostShock(){ghost = GhostState.SHOCKED;}
-	boolean ghostIsShocked()
+	public void ghostShock()
 	{
-		if (ghost == GhostState.SHOCKED)
-			return true;
+		if(ghostStateSwitch)
+			ghostStateSwitch = false;
 		else
-			return false;
+			ghostStateSwitch = true;
 	}
-	void ghostRecover(){ghost = GhostState.COMMON;}
+	
 	
 	//小精靈系列
-	void pacmanKilled(){pac = PacmanState.KILLED;}
-	boolean pacmanIsKilled()
+	public void pacmanKilled(){pac = PacmanState.KILLED;}
+	public boolean pacmanIsKilled()
 	{
 		if(pac == PacmanState.KILLED)
 			return true;
 		else return false;
 	}
-	void pacmanRetrive(){pac = PacmanState.COMMON;}
-	void pacPosUpdate(int x, int y){pacX = x; pacY = y;}
+	public void pacmanRetrive(){pac = PacmanState.COMMON;}
+	public void pacPosUpdate(int x, int y){pacX = x; pacY = y;}
 }

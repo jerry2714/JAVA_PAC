@@ -11,6 +11,7 @@ class Ghost extends GameObject
 {
 	private static BufferedImage bodyImage;	//身體樣圖
 	private static BufferedImage eye;	//眼睛
+	private static BufferedImage eyeWhite;	//眼白
 	private static BufferedImage scared1;//被嚇到的圖
 	private static BufferedImage scared2;
 	private BufferedImage body;	//身體
@@ -19,17 +20,29 @@ class Ghost extends GameObject
 	double temp;
 	double speed;
 	final double COMMON_SPEED = 2;
-	final double LOW_SPEED = 0;
+	final double LOW_SPEED = 1;
+	final double ESCAPING_SPEED = 4;
 	static Random ran = new Random();
 	ScaredControl sc = new ScaredControl();
+	
+	
+	
 	static
 	{
 		try
 		{
 			bodyImage = ImageIO.read(new File("res\\images\\Ghost1.png"));
 			eye = ImageIO.read(new File("res\\images\\spinnyeyes.png"));
+			eyeWhite = ImageIO.read(new File("res\\images\\eyes.png"));
 			scared1 = ImageIO.read(new File("res\\images\\ghostscared1.png"));
 			scared2 = ImageIO.read(new File("res\\images\\ghostscared2.png"));
+			
+			for(int i = 0; i < eyeWhite.getWidth(); i++)
+				for(int j = 0; j < eyeWhite.getHeight(); j++)
+				{
+					if(eyeWhite.getRGB(i, j) >> 24 != 0 && eyeWhite.getRGB(i, j) != 0xffffffff)
+						eyeWhite.setRGB(i, j, 0xffffffff);
+				}
         }
 		catch(Exception e){}
         
@@ -51,6 +64,7 @@ class Ghost extends GameObject
 		setId(Number.GHOST);
 		speed = COMMON_SPEED;
 		
+		
 		//給新來的幽靈新的顏色
 		int color;
 		do{
@@ -71,17 +85,25 @@ class Ghost extends GameObject
 				if(body.getRGB(i, j) >> 24 != 0 && body.getRGB(i, j) != 0xffffffff)
 					body.setRGB(i, j, color);
 			}
+		
 		//
 	}
-	public void hitReact(Number num)
+	public void hitReact(GameObject g)
 	{
+		Number num = g.getId();
 		switch(num)
 		{
 			case GHOST:
 				//setDireciton();
 				break;
 			case PACMAN:
-				speed = 0;
+				if(sc.isShocked)
+				{
+					sc.isEscaping = true;
+					sc.isShocked = false;
+					sc.start = false;
+					gscontrol.score += 200;
+				}
 				break;
 		}
 	}
@@ -91,9 +113,12 @@ class Ghost extends GameObject
 		direction = d;
 		Graphics2D g2d = img.createGraphics();
 		
-		if(!gscontrol.ghostIsShocked())
+		if(!sc.isShocked)
 		{
-			g2d.drawImage(body, 0, 0, this);
+			if(!sc.isEscaping)
+				g2d.drawImage(body, 0, 0, this);
+			else
+				g2d.drawImage(eyeWhite, 0, 0, this);
 			switch(d)	//換方向同時更新眼睛的位置
 			{
 				case UP:
@@ -113,11 +138,57 @@ class Ghost extends GameObject
 		}
 		//img = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
 	}
+	public boolean ghostIsShocked(){return sc.isShocked;}
+	public boolean ghostIsEscaping(){return sc.isEscaping;}
 	public void action()
 	{
 		if(gscontrol.pacmanIsKilled())
 			return;
-		if(ran.nextInt(10) == 1)	//變換方向
+		if(gscontrol.ghostStateSwitch != sc.stateSwitch)
+		{
+			sc.stateSwitch = gscontrol.ghostStateSwitch;
+			if(!sc.isEscaping)
+			{
+				sc.isShocked = true;
+				sc.start = false;
+			}
+		}
+		
+		if(sc.isShocked)
+		{
+			speed = -LOW_SPEED;
+			if(!sc.scaredReact())
+			{
+				sc.isShocked = false;
+				setDirection(direction);
+			}
+		}
+		else if(sc.isEscaping)
+		{
+			speed = ESCAPING_SPEED;
+			if(!sc.escaping())
+			{
+				sc.isEscaping = false;
+				setDirection(direction);
+			}
+		}
+		else
+			speed = COMMON_SPEED;
+		if(sc.isEscaping)	//變換方向
+		{
+			if(ran.nextInt(50) == 1)	
+			{
+				switch(ran.nextInt(4))
+				{
+					case 0:setDirection(Direction.LEFT);  break;
+					case 1:setDirection(Direction.RIGHT); break;
+					case 2:setDirection(Direction.UP);    break;
+					case 3:setDirection(Direction.DOWN);  break;
+				}
+			}
+		
+		}
+		else if(ran.nextInt(50) == 1)
 		{
 			if(ran.nextInt(2) == 1)
 			{
@@ -134,14 +205,6 @@ class Ghost extends GameObject
 					setDirection(Direction.DOWN);
 			}
 		}
-		if(gscontrol.ghostIsShocked())
-		{
-			speed = -LOW_SPEED;
-			if(!sc.animation())
-				gscontrol.ghostRecover();
-		}
-		else
-			speed = COMMON_SPEED;
 		switch(direction)
 		{
 			case CENTER:
@@ -170,11 +233,15 @@ class Ghost extends GameObject
 		}
 		outOfAreaFix();
 		rect.setBounds(x, y, width, height);
+		//System.out.println(x+ " "+y);
 	}
 	
 	
 	class ScaredControl
 	{
+		boolean stateSwitch = false;
+		boolean isShocked = false;
+		boolean isEscaping = false;
 		
 		int count = 0;
 		byte imageNumber;
@@ -182,15 +249,16 @@ class Ghost extends GameObject
 		Instant i1;
 		Instant i2;
 		boolean start = false;
-		public boolean animation()
+		public boolean scaredReact()
 		{
 			if(!start)
 			{
 				i1 = i1.now();
 				imageNumber = 1;
 				start = true;
-				switchImage();
 				setPriority(Priority.SHOCKED_GHOST);
+				count = 0;
+				switchImage();
 			}
 			i2 = i2.now();
 			if(i2.minus(Duration.ofSeconds(1)).isAfter(i1))
@@ -200,7 +268,7 @@ class Ghost extends GameObject
 				switchImage();
 			}
 			
-			if(count == 18)
+			if(count == 15)
 			{
 				count = 0;
 				start = false;
@@ -209,9 +277,10 @@ class Ghost extends GameObject
 			}
 			else return true;
 		}
+		
 		public void switchImage()
 		{
-			if(count > 10)
+			if(count > 8)
 			{
 				if(imageNumber == 1)
 					imageNumber = 2;
@@ -224,5 +293,55 @@ class Ghost extends GameObject
 			else
 				g2d.drawImage(scared2, 0, 0, null);
 		}
+		public boolean escaping()
+		{
+			if(!start)
+			{
+				i1 = i1.now();
+				start = true;
+				setPriority(Priority.ESCAPING_GHOST);
+				count = 0;
+				Graphics2D g2d = img.createGraphics();
+				g2d.setBackground(transparent);
+				for(int i = 0; i < img.getWidth(); i++)
+					for(int j = 0; j < img.getHeight(); j++)
+						img.setRGB(i, j, 0x00000000);
+				//g2d.clearRect(0, 0, width, height);
+				g2d.drawImage(eyeWhite, 0, 0, null);
+				setDirection(direction);
+			}
+			i2 = i2.now();
+			if(i2.minus(Duration.ofSeconds(1)).isAfter(i1))
+			{	
+				count++;
+				i1 = i1.now();
+			}
+			if(count == 6)
+			{
+				count = 0;
+				start = false;
+				setPriority(Priority.GHOST);
+				return false;
+			}
+			else return true;
+		}
 	}
+	// static public void main(String args[])
+	// {
+		// Frame frm = new Frame();
+		// frm.setSize(800, 800);
+		
+		// Canvas c = new Canvas();
+		// frm.add(c);
+		// c.setBackground(Color.black);
+		// frm.setVisible(true);
+		
+		
+		// Graphics g = c.getGraphics();
+		// while(true)
+		// g.drawImage(eyeWhite, 0, 0, null);
+		
+		
+		
+	// }
 }

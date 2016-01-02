@@ -59,19 +59,19 @@ abstract class GameObject extends GameCanvas implements Comparable<GameObject>, 
 	{
 		g.drawImage(img, (int)x, (int)y, this);
 	}
-	abstract public void action();	//繼承後改寫，會在繪圖前呼叫
-	abstract public void hitReact(Number num);
+	public void action(){}	//繼承後改寫，會在繪圖前呼叫
+	public void hitReact(GameObject g){}
 	
 	void outOfAreaFix()
 	{
-		if(x > frameWidth && direction == Direction.RIGHT)
-			x = 0 - width;
-		if(x + width < 0 && direction == Direction.LEFT)
-			x = frameWidth;
-		if(y > frameHeight && direction == Direction.DOWN)
-			y = 0 - height;
-		if(y + height < 0 && direction == Direction.UP)
-			y = frameHeight;
+		if(x > Foreground.foreX+Foreground.foreW/* && direction == Direction.RIGHT*/)
+			x = 0 + Foreground.foreX - width;
+		if(x + width < Foreground.foreX/* && direction == Direction.LEFT*/)
+			x = Foreground.foreX+Foreground.foreW;
+		if(y > Foreground.foreY+Foreground.foreH/* && direction == Direction.DOWN*/)
+			y = 0 + Foreground.foreY - height;
+		if(y + height < Foreground.foreY/* && direction == Direction.UP*/)
+			y = Foreground.foreY+Foreground.foreH;
 		rect.setBounds(x, y, width, height);
 	}
 	public int compareTo(GameObject go)//將繪圖優先權設為排序依據

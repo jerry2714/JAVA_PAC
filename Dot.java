@@ -24,19 +24,22 @@ class Dot extends GameObject
 	}
 	public void changePos()
 	{
-		int x = ran.nextInt(frameWidth-40)+20;
-		int y = ran.nextInt(frameHeight-40)+20;
+		int x = ran.nextInt(frameWidth-80)+40;
+		int y = ran.nextInt(frameHeight-80)+40;
 		setPosition(x, y);
-		System.out.println(x + " " + y);
+		//System.out.println(x + " " + y);
 		rect.setBounds(x, y, width, height);
 		
+		
 	}
-	public void hitReact(Number num)
+	public void hitReact(GameObject g)
 	{
+		Number num = g.getId();
 		switch(num)
 		{
 			case PACMAN:
 				changePos();
+				gscontrol.score += 10;
 				break;
 		}
 	}

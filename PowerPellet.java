@@ -24,18 +24,22 @@ class PowerPellet extends GameObject
 	}
 	public void changePos()
 	{
-		int x = ran.nextInt(frameWidth-20)+10;
-		int y = ran.nextInt(frameHeight-20)+10;
+		int x = ran.nextInt(frameWidth-80)+40;
+		int y = ran.nextInt(frameHeight-80)+40;
 		setPosition(x, y);
-		System.out.println(x + " " + y);
+		//System.out.println(x + " " + y);
 		rect.setBounds(x, y, width, height);
+		
 	}
-	public void hitReact(Number num)
+	public void hitReact(GameObject g)
 	{
+		Number num = g.getId();
 		switch(num)
 		{
 			case PACMAN:
 				appear = false;
+				gscontrol.score += 50;
+				rect.setBounds(-50, -50, width, height);
 				break;
 		}
 	}
@@ -43,7 +47,7 @@ class PowerPellet extends GameObject
 	{
 		if(appear == true)
 			return;
-		if(ran.nextInt(1000) == 0)
+		if(ran.nextInt(10) == 0)
 		{
 			appear = true;
 			changePos();

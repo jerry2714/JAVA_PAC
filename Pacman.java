@@ -64,7 +64,7 @@ class Pacman extends GameObject
 				theta = Math.PI;
 				break;
 		}
-		System.out.println(theta);
+		//System.out.println(theta);
 	}
 	
 	public void action()
@@ -140,12 +140,13 @@ class Pacman extends GameObject
 			return true;
 	}
 	
-	public void hitReact(Number num)
+	public void hitReact(GameObject g)
 	{
+		Number num = g.getId();
 		switch(num)
 		{
 			case GHOST:
-				if(gscontrol.ghostIsShocked())
+				if(((Ghost)g).ghostIsShocked() || ((Ghost)g).ghostIsEscaping())
 				{}
 				else
 				{
@@ -153,7 +154,7 @@ class Pacman extends GameObject
 				}
 				break;
 			case POWER_PELLET:
-				gscontrol.ghostShock();
+					gscontrol.ghostShock();
 				break;
 		}
 	}
