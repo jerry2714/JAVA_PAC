@@ -15,7 +15,7 @@ class Pacman extends GameObject
 	private int bodyAngle = BODY_ANGLE;//小精靈從upperLip開始算的角度(為了從upperLip開始逆時針畫出小精靈身體)
 	private double theta = 0;
 	double temp = 0;
-	double speed = 3;	//移動速度(暫定speed，目前移動作法為 x+=speed這種，視窗resize就會影響移動速度)
+	double speed = 1.75;	//移動速度(暫定speed，目前移動作法為 x+=speed這種，視窗resize就會影響移動速度)
 	double mouthMotionSpeed = 4;//小精靈嘴巴開合速度(作法跟上面類似，問題也一樣)
 	//int bigW, bigH;
 	public Pacman()
@@ -89,31 +89,28 @@ class Pacman extends GameObject
 					}
 				}
 				
-				switch(direction)
+				temp += speed;
+				if((int)temp != 0)
 				{
-					case CENTER:
-						break;
-					case UP:
-						temp = y;
-						temp -= speed;
-						y = (int)temp;
-						break;
-					case DOWN:
-						temp = y;
-						temp += speed;
-						y = (int)temp;
-						break;
-					case LEFT:
-						temp = x;
-						temp -= speed;
-						x = (int)temp;
-						break;
-					case RIGHT:
-						temp = x;
-						temp += speed;
-						x = (int)temp;
-						break;
-					default:
+					switch(direction)
+					{
+						case CENTER:
+							break;
+						case UP:
+							y -= (int)temp;
+							break;
+						case DOWN:;
+							y += (int)temp;
+							break;
+						case LEFT:
+							x -= (int)temp;
+							break;
+						case RIGHT:
+							x += (int)temp;
+							break;
+						default:
+					}
+					temp -= (int)temp;
 				}
 				break;
 			case KILLED:
@@ -122,6 +119,9 @@ class Pacman extends GameObject
 					gscontrol.pacmanRetrive();
 					upperLip = UPPER_LIP;
 					bodyAngle = BODY_ANGLE;
+					mouthMotionSpeed = 4;
+					setDirection(Direction.CENTER);
+					return;
 				}
 				break;
 		}
@@ -132,7 +132,7 @@ class Pacman extends GameObject
 	}
 	public boolean dying() //死掉的動畫，動畫還沒結束就return true，動畫結束了就return false
 	{
-		mouthMotionSpeed = 1;
+		mouthMotionSpeed = 4;
 		bodyAngle -= mouthMotionSpeed;
 		if(bodyAngle == 0)
 			return false;
@@ -148,7 +148,7 @@ class Pacman extends GameObject
 			case GHOST:
 				if(((Ghost)g).ghostIsShocked() || ((Ghost)g).ghostIsEscaping())
 				{}
-				else
+				else if(gscontrol.pac == gscontrol.pac.COMMON)
 				{
 					gscontrol.pacmanKilled();
 				}

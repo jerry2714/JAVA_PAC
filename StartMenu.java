@@ -26,8 +26,38 @@ class StartMenu extends Panel implements KeyListener, MouseMotionListener, Mouse
 		exitBtn.setBounds(frameWidth/2-50, frameHeight/5*3+70, 100, 60);
 	}
 	
-	
-	
+	public void mouseMoved   (MouseEvent e){}
+	public void mouseDragged (MouseEvent e){}
+	public void mouseClicked (MouseEvent e){}
+	public void mouseEntered (MouseEvent e){}
+	public void mouseExited  (MouseEvent e){}
+	public void mousePressed (MouseEvent e){}
+	public void mouseReleased(MouseEvent e){}
+	public void keyPressed (KeyEvent e){}
+	public void keyReleased(KeyEvent e){}
+	public void keyTyped    (KeyEvent e){}
+}
+class GameOptionMenu extends Panel implements KeyListener, MouseMotionListener, MouseListener
+{
+	static Font font = new Font("", Font.BOLD, 16);
+	TheButton resumetBtn = new TheButton("繼續", font, null);
+	TheButton exitBtn = new TheButton("結束遊戲", font, null);
+	int frameWidth, frameHeight;
+	public GameOptionMenu()
+	{
+		
+		setBackground(Color.white);
+		add(resumetBtn);
+		add(exitBtn);
+		resumetBtn.addMouseListener(resumetBtn);
+		exitBtn.addMouseListener(exitBtn);
+	}
+	public void init()
+	{
+		frameWidth = getWidth(); frameHeight = getHeight();
+		resumetBtn.setSize(100, 60);
+		exitBtn.setSize(100, 60);
+	}
 	
 	public void mouseMoved   (MouseEvent e){}
 	public void mouseDragged (MouseEvent e){}
@@ -52,6 +82,16 @@ class TheButton extends GameObject implements MouseListener
 		setBackground(color);
 		this.str = str;
 	}
+	public TheButton(String str, Font font, Color c)
+	{
+		if(c == null)
+			setBackground(color);
+		else
+			setBackground(c);
+		if(font != null)
+			this.font = font;
+		this.str = str;
+	}
 	public void paint(Graphics g)
 	{
 		g.setFont(font);
@@ -64,10 +104,14 @@ class TheButton extends GameObject implements MouseListener
 	public void mouseClicked (MouseEvent e)
 	{
 		if(str == "離開")
-			RunningPacman.frm.exit();
+			RunningPacman.exit();
 		else if(str == "開始")
 		{
-			
+			RunningPacman.gameStart();
+		}
+		else if(str == "繼續")
+		{
+			RunningPacman.game.gamePauseSwitch();
 		}
 	}
 	public void mouseEntered (MouseEvent e){color = color.brighter();setBackground(color);}

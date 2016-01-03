@@ -36,7 +36,17 @@ public class RunningPacman extends Frame implements WindowListener
 		card.show(frm, "StartMenu");
 
 	}
-	public void exit()
+	static public void gameStart()
+	{
+		game.init();
+		card.show(frm, "Game");
+		game.gameStart();
+	}
+	static public void show(String str)
+	{
+		card.show(frm, str);
+	}
+	static public void exit()
 	{
 		game.gameExit();
 		frm.dispose();

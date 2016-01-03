@@ -5,13 +5,14 @@ class Score extends GameObject
 	StringBuffer strBuf = new StringBuffer("score: 0000");
 	String str;
 	int score = 0;
-	
+	int stage = 0;
 	public void init()
 	{
 		str = "0000";
 		strBuf.replace(7, 11, str);
 		//System.out.println(strBuf);
 		setPriority(Priority.ICON);
+		stage = 1;
 	}
 	public void hitReact(GameObject g){}
 	public void action()
@@ -21,6 +22,11 @@ class Score extends GameObject
 			score = gscontrol.score;
 			str = Integer.toString(score);
 			strBuf.replace(11-str.length(), 11, str);
+		}
+		if(gscontrol.oneMoreGhost == false && score > stage * 500)
+		{
+			gscontrol.oneMoreGhost = true;
+			stage++;
 		}
 	}
 	public void paintCanvas(Graphics g)

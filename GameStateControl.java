@@ -3,12 +3,13 @@ class GameStateControl	//全體狀態以及各種狀態查看、切換等等方法，
 	public int score;
 	public int life;
 	public enum GameState{COMMON, GAME_OVER, GAME_PAUSE}//遊戲本體狀態
-	public enum PacmanState{COMMON, KILLED}//小精靈狀態
+	public enum PacmanState{COMMON, KILLED, RETRIVE}//小精靈狀態
 	
 	
 	public GameState game;
 	public PacmanState pac;
 	public boolean ghostStateSwitch = false;
+	public boolean oneMoreGhost = false;
 	
 	public int pacX, pacY;
 	
@@ -20,6 +21,7 @@ class GameStateControl	//全體狀態以及各種狀態查看、切換等等方法，
 		game = GameState.GAME_PAUSE;
 		pac = PacmanState.COMMON;
 		ghostStateSwitch = false;
+		oneMoreGhost = false;
 	}
 	
 	//遊戲暫停系列
@@ -51,6 +53,6 @@ class GameStateControl	//全體狀態以及各種狀態查看、切換等等方法，
 			return true;
 		else return false;
 	}
-	public void pacmanRetrive(){pac = PacmanState.COMMON;}
+	public void pacmanRetrive(){pac = PacmanState.RETRIVE;}
 	public void pacPosUpdate(int x, int y){pacX = x; pacY = y;}
 }

@@ -19,8 +19,8 @@ class Ghost extends GameObject
 	
 	double temp;
 	double speed;
-	final double COMMON_SPEED = 2;
-	final double LOW_SPEED = 1;
+	final double COMMON_SPEED = 1.5;
+	final double LOW_SPEED = 0.5;
 	final double ESCAPING_SPEED = 4;
 	static Random ran = new Random();
 	ScaredControl sc = new ScaredControl();
@@ -104,6 +104,7 @@ class Ghost extends GameObject
 					sc.start = false;
 					gscontrol.score += 200;
 				}
+				if(gscontrol.pac != gscontrol.pac.COMMON)
 				break;
 		}
 	}
@@ -176,7 +177,7 @@ class Ghost extends GameObject
 			speed = COMMON_SPEED;
 		if(sc.isEscaping)	//ÅÜ´«¤è¦V
 		{
-			if(ran.nextInt(50) == 1)	
+			if(ran.nextInt(25) == 1)	
 			{
 				switch(ran.nextInt(4))
 				{
@@ -205,38 +206,40 @@ class Ghost extends GameObject
 					setDirection(Direction.DOWN);
 			}
 		}
-		switch(direction)
+		temp += speed;
+		if((int)temp != 0)
 		{
-			case CENTER:
-				break;
-			case UP:
-				temp = y;
-				temp -= speed;
-				y = (int)temp;
-				break;
-			case DOWN:
-				temp = y;
-				temp += speed;
-				y = (int)temp;
-				break;
-			case LEFT:
-				temp = x;
-				temp -= speed;
-				x = (int)temp;
-				break;
-			case RIGHT:
-				temp = x;
-				temp += speed;
-				x = (int)temp;
-				break;
-			default:
-		}
+			switch(direction)
+			{
+				case CENTER:
+					break;
+				case UP:
+					y -= (int)temp;
+					break;
+				case DOWN:;
+					y += (int)temp;
+					break;
+				case LEFT:
+					x -= (int)temp;
+					break;
+				case RIGHT:
+					x += (int)temp;
+					break;
+				default:
+			}
+			temp -= (int)temp;
+		}	
+		
 		outOfAreaFix();
 		rect.setBounds(x, y, width, height);
 		//System.out.println(x+ " "+y);
 	}
 	
-	
+	public void init()
+	{
+		sc.isShocked = false;
+		sc.isEscaping = false;
+	}
 	class ScaredControl
 	{
 		boolean stateSwitch = false;

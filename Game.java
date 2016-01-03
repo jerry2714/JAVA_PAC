@@ -7,24 +7,23 @@ import javax.imageio.*;
 import java.util.*;
 
 
+
 class Game extends Panel implements Initialize, KeyListener, General
 {
-	GameLoop gl = new GameLoop();
-	Ghost ghost1 = new Ghost();
-	Ghost ghost2 = new Ghost();
-	Pacman pacman = new Pacman();
-	Background bg = new Background();
-	Foreground fg = new Foreground();
-	Dot dot = new Dot();
-	PowerPellet powerPellet = new PowerPellet();
-	Score score = new Score();
+	GameLoop gl;
+	Pacman pacman;
+	Background bg;
+	Foreground fg;
+	Dot dot;
+	PowerPellet powerPellet;
+	Score score;
+	GameOptionMenu goMenu;
 	int frameWidth, frameHeight;
 	
-	Timer timer = new Timer();
+	Timer timer;
 	Game()
 	{
-		this.setLayout(new BorderLayout());
-		this.add(gl.getCanvas());
+		
 	}
 	public void setFrameSize(int width, int height)
 	{
@@ -34,10 +33,18 @@ class Game extends Panel implements Initialize, KeyListener, General
 	}
 	public void init()
 	{
+		timer = new Timer();
+		gl = new GameLoop();
+		pacman = new Pacman();
+		bg = new Background();
+		fg = new Foreground();
+		dot = new Dot();
+		powerPellet = new PowerPellet();
+		score = new Score();
+		goMenu = new GameOptionMenu();
+		
 		setFrameSize(getWidth(), getHeight());
 		gl.init();
-		gl.addToDrawList(ghost1);
-		gl.addToDrawList(ghost2);
 		gl.addToDrawList(pacman);
 		gl.addToDrawList(dot);
 		gl.addToDrawList(bg);
@@ -45,23 +52,32 @@ class Game extends Panel implements Initialize, KeyListener, General
 		gl.addToDrawList(powerPellet);
 		gl.addToDrawList(score);
 		
-		gl.addToMovingList(ghost1);
-		gl.addToMovingList(ghost2);
 		gl.addToMovingList(pacman);
 		gl.addToMovingList(dot);
 		gl.addToMovingList(powerPellet);
 		
-		ghost1.setDirection(GameObject.Direction.CENTER);
-		ghost2.setDirection(GameObject.Direction.CENTER);
+		for(int i = 1; i < 5; i++)
+		{
+			Ghost g = new Ghost();
+			gl.addToDrawList(g);
+			gl.addToMovingList(g);
+			g.setPosition(i*100, 400);
+			g.setDirection(GameObject.Direction.CENTER);
+		}
+		
 		pacman.setDirection(GameObject.Direction.CENTER);
 		pacman.setPosition(50, 50);
 		bg.init();
 		fg.init();
 		score.init();
-		ghost2.setPosition(300, 500);
-		ghost1.setPosition(600, 500);
 		dot.changePos();
 		gscontrol.init();
+		goMenu.setBounds(frameWidth/2-150, frameHeight/2-150, 300, 300);
+		goMenu.init();
+		this.setLayout(null);
+		this.add(goMenu);
+		this.add(gl.getCanvas());
+		goMenu.setVisible(false);
 		this.addKeyListener(this);
 	}
 	public void gameStart()
@@ -70,12 +86,41 @@ class Game extends Panel implements Initialize, KeyListener, General
 		this.requestFocus();
 		// timer.purge();
 		//timer.scheduleAtFixedRate(gl, 0, 10);
+		gscontrol.init();
 		timer.schedule(gl, 0, 10);
 		gl.pauseSwitch();
 	}
+	public void gamePauseSwitch()
+	{
+		gl.pauseSwitch();
+		if(goMenu.isVisible())
+		{
+			goMenu.setVisible(false);
+			this.requestFocus();
+		}
+		else
+			goMenu.setVisible(true);
+		System.out.println("pause");
+	}
 	public void gameExit()
 	{
-		timer.cancel();
+		
+		try
+		{
+			timer.cancel();
+			gl.exit();
+			timer = null;
+			gl = null;
+			pacman = null;
+			bg = null;
+			fg = null;
+			dot = null;
+			powerPellet = null;
+			score = null;
+			goMenu = null;
+			this.removeKeyListener(this);
+		}
+		catch(NullPointerException e){}
 	}
 	
 	
@@ -97,7 +142,7 @@ class Game extends Panel implements Initialize, KeyListener, General
 				pacman.setDirection(GameObject.Direction.RIGHT);
 				break;
 			case KeyEvent.VK_ESCAPE:
-				gl.pauseSwitch();
+				gamePauseSwitch();
 				break;
 		}
 	}
@@ -116,16 +161,19 @@ class GameLoop extends TimerTask implements Initialize, General //基本上是遊戲迴
 	LinkedList<GameObject> movingList = new LinkedList<GameObject>();//存放遊戲中會移動的物件的串列
 	Iterator<GameObject> movingListItr;//list的Iterator
 	
-	
+	int frameWidth, frameHeight;
 	
 	HitDetecter hd = new HitDetecter();
 	public void setFrameSize(int width, int height)
 	{
+		frameWidth = width; frameHeight = height;
 		canvas.setFrameSize(width, height);
+		canvas.setBounds(0, 0, width, height);
 	}
 	public void init()
 	{
 		drawList.clear();
+		movingList.clear();
 		canvas.init();
 		canvas.setEnabled(false);
 	}
@@ -156,8 +204,73 @@ class GameLoop extends TimerTask implements Initialize, General //基本上是遊戲迴
 				canvas.draw(drawListItr.next());
 			canvas.update(canvas.getGraphics());
 			hd.run();
+			if(gscontrol.oneMoreGhost)
+			{
+				Ghost g = new Ghost();
+				drawList.add(g);
+				movingList.add(g);
+				g.setPosition(0, frameHeight);
+				g.setDirection(GameObject.Direction.CENTER);
+				gscontrol.oneMoreGhost = false;
+			}
+			if(gscontrol.pac == gscontrol.pac.RETRIVE)
+			{
+				gscontrol.pac = gscontrol.pac.COMMON;
+				
+				gscontrol.life--;
+				if(gscontrol.life == 0)
+				{
+					gameOver();
+					return;
+				}
+				linedUp();
+			}
+			
 		}
 	}
+	void gameOver()
+	{
+		Graphics g = canvas.getGraphics();
+		g.setColor(Color.yellow);
+		g.setFont(new Font("", Font.BOLD, 50));
+		g.drawString("GAME OVER", frameWidth/2, frameHeight/2);
+		try
+		{
+			Thread.sleep(2000);
+			RunningPacman.show("StartMenu");
+			RunningPacman.game.gameExit();
+			
+		}
+		catch(Exception e){System.out.println("interupt erreor");}
+	}
+	public void linedUp()
+	{
+		listSort();
+		movingListItr = movingList.iterator();
+		GameObject g;
+		Number num;
+		int i = 0;
+		while(movingListItr.hasNext())
+		{
+			g = movingListItr.next();
+			num = g.getId();
+			
+			switch(num)
+			{
+				case PACMAN:
+					g.setPosition(frameWidth/2, 100);
+					break;
+				case GHOST:
+					i++;
+					g.setPosition(i*60, 400);
+					g.init();
+					System.out.println("y");
+					break;
+			}
+		}
+		System.out.println("in");
+	}
+	
 	public void pauseSwitch()
 	{
 		if(gscontrol.isPause())
@@ -165,6 +278,12 @@ class GameLoop extends TimerTask implements Initialize, General //基本上是遊戲迴
 		else
 			gscontrol.pause();
 	}
+	public void exit()
+	{
+		drawList.clear();
+		movingList.clear();
+	}
+	
 	class HitDetecter //extends Thread
 	{
 		public boolean hitDetect(GameObject o1, GameObject o2) //偵測物體碰撞
