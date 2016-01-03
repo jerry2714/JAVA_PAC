@@ -216,7 +216,7 @@ class Ghost extends GameObject
 				case UP:
 					y -= (int)temp;
 					break;
-				case DOWN:;
+				case DOWN:
 					y += (int)temp;
 					break;
 				case LEFT:
@@ -239,6 +239,7 @@ class Ghost extends GameObject
 	{
 		sc.isShocked = false;
 		sc.isEscaping = false;
+		setDirection(Direction.CENTER);
 	}
 	class ScaredControl
 	{

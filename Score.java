@@ -5,10 +5,12 @@ class Score extends GameObject
 	StringBuffer strBuf = new StringBuffer("score: 0000");
 	String str;
 	int score = 0;
+	int life = 0;
 	int stage = 0;
 	public void init()
 	{
 		str = "0000";
+		life = 3;
 		strBuf.replace(7, 11, str);
 		//System.out.println(strBuf);
 		setPriority(Priority.ICON);
@@ -28,12 +30,14 @@ class Score extends GameObject
 			gscontrol.oneMoreGhost = true;
 			stage++;
 		}
+		life = gscontrol.life;
 	}
 	public void paintCanvas(Graphics g)
 	{
 		action();
 		g.setColor(Color.black);
 		g.drawString(strBuf.toString(), 5, 10);
+		g.drawString("life: "+Integer.toString(life), 5, 23);
 	}
 	// static public void main(String args[])
 	// {

@@ -87,7 +87,7 @@ class Game extends Panel implements Initialize, KeyListener, General
 		// timer.purge();
 		//timer.scheduleAtFixedRate(gl, 0, 10);
 		gscontrol.init();
-		timer.schedule(gl, 0, 10);
+		timer.schedule(gl, 0, 15);
 		gl.pauseSwitch();
 	}
 	public void gamePauseSwitch()
@@ -109,6 +109,8 @@ class Game extends Panel implements Initialize, KeyListener, General
 		{
 			timer.cancel();
 			gl.exit();
+			this.remove(goMenu);
+			this.remove(gl.getCanvas());
 			timer = null;
 			gl = null;
 			pacman = null;
@@ -198,6 +200,7 @@ class GameLoop extends TimerTask implements Initialize, General //基本上是遊戲迴
 	{
 		if(!gscontrol.isPause())
 		{
+			//System.out.println(this.scheduledExecutionTime());
 			listSort();
 			drawListItr = drawList.iterator();
 			while(drawListItr.hasNext())

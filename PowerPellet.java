@@ -47,7 +47,7 @@ class PowerPellet extends GameObject
 	{
 		if(appear == true)
 			return;
-		if(ran.nextInt(10) == 0)
+		if(ran.nextInt(500) == 0)
 		{
 			appear = true;
 			changePos();

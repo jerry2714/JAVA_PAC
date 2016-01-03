@@ -7,13 +7,13 @@ import java.util.*;
 class StartMenu extends Panel implements KeyListener, MouseMotionListener, MouseListener
 {
 	
-	TheButton startBtn = new TheButton("開始");
-	TheButton exitBtn = new TheButton("離開");
+	TheButton startBtn = new TheButton("開始", null, null, Color.yellow);
+	TheButton exitBtn = new TheButton("離開", null, null, Color.yellow);
 	int frameWidth, frameHeight;
 	public StartMenu()
 	{
 		setLayout(null);
-		setBackground(Color.white);
+		setBackground(Color.black);
 		add(startBtn);
 		add(exitBtn);
 		startBtn.addMouseListener(startBtn);
@@ -24,6 +24,16 @@ class StartMenu extends Panel implements KeyListener, MouseMotionListener, Mouse
 		frameWidth = getWidth(); frameHeight = getHeight();
 		startBtn.setBounds(frameWidth/2-50, frameHeight/5*3, 100, 60);
 		exitBtn.setBounds(frameWidth/2-50, frameHeight/5*3+70, 100, 60);
+	}
+	public void paint(Graphics g)
+	{
+		String str = "Running Pacman";
+		g.setColor(Color.yellow);
+		g.setFont(new Font("Arial", Font.BOLD+Font.ITALIC, 55));
+		int stringLen = (int) g.getFontMetrics().getStringBounds(str, g).getWidth();
+		int stringHi = (int) g.getFontMetrics().getStringBounds(str, g).getHeight();
+        int x = getWidth()/2 - stringLen/2;
+        g.drawString(str, x, 100);
 	}
 	
 	public void mouseMoved   (MouseEvent e){}
@@ -75,19 +85,35 @@ class TheButton extends GameObject implements MouseListener
 	String str;
 	//String exit = "離開";
 	Font font = new Font("標楷體", Font.BOLD, 32);
-	Color color = Color.gray;
+	Color bgColor = Color.gray;
+	Color textColor = Color.black;
 	
 	public TheButton(String str)
 	{
-		setBackground(color);
+		setBackground(bgColor);
 		this.str = str;
 	}
+
 	public TheButton(String str, Font font, Color c)
 	{
 		if(c == null)
-			setBackground(color);
+			setBackground(bgColor);
 		else
 			setBackground(c);
+		if(font != null)
+			this.font = font;
+		this.str = str;
+	}
+	public TheButton(String str, Font font, Color bc, Color c)
+	{
+		if(bc == null)
+			setBackground(bgColor);
+		else
+			setBackground(bc);
+		if(c == null)
+			textColor = Color.black;
+		else 
+			textColor = c;
 		if(font != null)
 			this.font = font;
 		this.str = str;
@@ -95,6 +121,7 @@ class TheButton extends GameObject implements MouseListener
 	public void paint(Graphics g)
 	{
 		g.setFont(font);
+		g.setColor(textColor);
 		int stringLen = (int) g.getFontMetrics().getStringBounds(str, g).getWidth();
 		int stringHi = (int) g.getFontMetrics().getStringBounds(str, g).getHeight();
         int x = getWidth()/2 - stringLen/2;
@@ -103,19 +130,24 @@ class TheButton extends GameObject implements MouseListener
 	}
 	public void mouseClicked (MouseEvent e)
 	{
-		if(str == "離開")
+		if(str.equals("離開"))
 			RunningPacman.exit();
-		else if(str == "開始")
+		else if(str.equals("開始"))
 		{
 			RunningPacman.gameStart();
 		}
-		else if(str == "繼續")
+		else if(str.equals("繼續"))
 		{
 			RunningPacman.game.gamePauseSwitch();
 		}
+		else if(str.equals("結束遊戲"))
+		{
+			RunningPacman.show("StartMenu");
+			RunningPacman.game.gameExit();
+		}
 	}
-	public void mouseEntered (MouseEvent e){color = color.brighter();setBackground(color);}
-	public void mouseExited  (MouseEvent e){color = color.darker();setBackground(color);}
+	public void mouseEntered (MouseEvent e){bgColor = bgColor.brighter();setBackground(bgColor);}
+	public void mouseExited  (MouseEvent e){bgColor = bgColor.darker();setBackground(bgColor);}
 	public void mousePressed (MouseEvent e){}
 	public void mouseReleased(MouseEvent e){}
 }

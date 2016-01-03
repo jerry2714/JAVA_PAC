@@ -15,7 +15,7 @@ class Pacman extends GameObject
 	private int bodyAngle = BODY_ANGLE;//小精靈從upperLip開始算的角度(為了從upperLip開始逆時針畫出小精靈身體)
 	private double theta = 0;
 	double temp = 0;
-	double speed = 1.75;	//移動速度(暫定speed，目前移動作法為 x+=speed這種，視窗resize就會影響移動速度)
+	double speed = 2;	//移動速度(暫定speed，目前移動作法為 x+=speed這種，視窗resize就會影響移動速度)
 	double mouthMotionSpeed = 4;//小精靈嘴巴開合速度(作法跟上面類似，問題也一樣)
 	//int bigW, bigH;
 	public Pacman()

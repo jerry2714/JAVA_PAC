@@ -18,6 +18,7 @@ public class RunningPacman extends Frame implements WindowListener
 	
 	public static void main(String args[])
 	{
+		System.gc();
 		frm.setResizable(false);
 		
 		
