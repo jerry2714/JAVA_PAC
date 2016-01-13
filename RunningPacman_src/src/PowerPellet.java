@@ -53,7 +53,7 @@ class PowerPellet extends GameObject
 			changePos();
 		}
 	}
-	public void paintCanvas(Graphics g)//¹w³]¹CÀ¸ª«¥óÃ¸¹Ï¤èªk
+	public void paintCanvas(Graphics g)//é è¨­éŠæˆ²ç‰©ä»¶ç¹ªåœ–æ–¹æ³•
 	{
 		action();
 		if(appear)

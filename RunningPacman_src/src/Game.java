@@ -154,14 +154,14 @@ class Game extends Panel implements Initialize, KeyListener, General
 	public void keyTyped(KeyEvent e){}
 }
 
-class GameLoop extends TimerTask implements Initialize, General //°ò¥»¤W¬O¹CÀ¸°j°é
+class GameLoop extends TimerTask implements Initialize, General //åŸºæœ¬ä¸Šæ˜¯éŠæˆ²è¿´åœˆ
 {
 	static GameCanvas canvas = new GameCanvas();
-	LinkedList<GameObject> drawList = new LinkedList<GameObject>();//¦s©ñ©Ò¦³¹CÀ¸¤¤ª«¥óªº¦ê¦C
-	Iterator<GameObject> drawListItr;//listªºIterator
+	LinkedList<GameObject> drawList = new LinkedList<GameObject>();//å­˜æ”¾æ‰€æœ‰éŠæˆ²ä¸­ç‰©ä»¶çš„ä¸²åˆ—
+	Iterator<GameObject> drawListItr;//listçš„Iterator
 	
-	LinkedList<GameObject> movingList = new LinkedList<GameObject>();//¦s©ñ¹CÀ¸¤¤·|²¾°Êªºª«¥óªº¦ê¦C
-	Iterator<GameObject> movingListItr;//listªºIterator
+	LinkedList<GameObject> movingList = new LinkedList<GameObject>();//å­˜æ”¾éŠæˆ²ä¸­æœƒç§»å‹•çš„ç‰©ä»¶çš„ä¸²åˆ—
+	Iterator<GameObject> movingListItr;//listçš„Iterator
 	
 	int frameWidth, frameHeight;
 	
@@ -183,15 +183,15 @@ class GameLoop extends TimerTask implements Initialize, General //°ò¥»¤W¬O¹CÀ¸°j
 	{
 		return canvas;
 	}
-	public void addToDrawList(GameObject go)//±N¤@­ÓGameObject¥[¤J¦ê¦C
+	public void addToDrawList(GameObject go)//å°‡ä¸€å€‹GameObjectåŠ å…¥ä¸²åˆ—
 	{
 		drawList.add(go);
 	}
-	public void addToMovingList(GameObject go)//±N¤@­ÓGameObject¥[¤J¦ê¦C
+	public void addToMovingList(GameObject go)//å°‡ä¸€å€‹GameObjectåŠ å…¥ä¸²åˆ—
 	{
 		movingList.add(go);
 	}
-	public void listSort()//±Nlist¤¤ªº¤¸¯À®Ú¾ÚÀu¥ıÅv¶i¦æ±Æ§Ç
+	public void listSort()//å°‡listä¸­çš„å…ƒç´ æ ¹æ“šå„ªå…ˆæ¬Šé€²è¡Œæ’åº
 	{
 		Collections.sort(drawList);
 		Collections.sort(movingList);
@@ -289,7 +289,7 @@ class GameLoop extends TimerTask implements Initialize, General //°ò¥»¤W¬O¹CÀ¸°j
 	
 	class HitDetecter //extends Thread
 	{
-		public boolean hitDetect(GameObject o1, GameObject o2) //°»´úª«Åé¸I¼²
+		public boolean hitDetect(GameObject o1, GameObject o2) //åµæ¸¬ç‰©é«”ç¢°æ’
 		{
 			int x1, y1;
 			int x2, y2;
@@ -297,9 +297,9 @@ class GameLoop extends TimerTask implements Initialize, General //°ò¥»¤W¬O¹CÀ¸°j
 			Rectangle r = o1.getRect().intersection(o2.getRect());
 			if(!r.isEmpty())
 			{
-				x1 = (int)(r.getX()-o1.getx());//­«Å|°Ï¥ª¤W¨¤¦bo1¸Ìªº®y¼Ğ
+				x1 = (int)(r.getX()-o1.getx());//é‡ç–Šå€å·¦ä¸Šè§’åœ¨o1é‡Œçš„åº§æ¨™
 				y1 = (int)(r.getY()-o1.gety());
-				x2 = (int)(r.getX()-o2.getx());//­«Å|°Ï¥ª¤W¨¤¦bo2¸Ìªº®y¼Ğ
+				x2 = (int)(r.getX()-o2.getx());//é‡ç–Šå€å·¦ä¸Šè§’åœ¨o2é‡Œçš„åº§æ¨™
 				y2 = (int)(r.getY()-o2.gety());
 				w = (int)r.getWidth();
 				h = (int)r.getHeight();
@@ -329,7 +329,7 @@ class GameLoop extends TimerTask implements Initialize, General //°ò¥»¤W¬O¹CÀ¸°j
 			}
 			return false;
 		}
-		public void run()//iterate¹Lµ{»İ­×§ï(µù1)
+		public void run()//iterateéç¨‹éœ€ä¿®æ”¹(è¨»1)
 		{
 			Iterator<GameObject> itr1, itr2;
 			itr1 = movingList.iterator();
@@ -347,7 +347,7 @@ class GameLoop extends TimerTask implements Initialize, General //°ò¥»¤W¬O¹CÀ¸°j
 					while(itr2.hasNext())
 					{
 						o2 = itr2.next();
-						if(hitDetect(o1, o2) && o1 != o2)//µù1:¦³o1==o2ªº°İÃD¡A®ö¶O®É¶¡
+						if(hitDetect(o1, o2) && o1 != o2)//è¨»1:æœ‰o1==o2çš„å•é¡Œï¼Œæµªè²»æ™‚é–“
 						{
 							o1.hitReact(o2);
 							o2.hitReact(o1);

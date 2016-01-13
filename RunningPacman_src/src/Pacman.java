@@ -4,19 +4,19 @@ import javax.imageio.*;
 import java.io.*;
 import java.awt.image.*;
 
-//¤pºëÆF
+//å°ç²¾éˆ
 class Pacman extends GameObject
 {
 	Graphics2D g2d;
 	
 	private final int UPPER_LIP = 40;
 	private final int BODY_ANGLE = 280;
-	private int upperLip = UPPER_LIP;	//¤pºëÆF¤W¼L®B¸òx¶b§¨¨¤
-	private int bodyAngle = BODY_ANGLE;//¤pºëÆF±qupperLip¶}©lºâªº¨¤«×(¬°¤F±qupperLip¶}©l°f®É°wµe¥X¤pºëÆF¨­Åé)
+	private int upperLip = UPPER_LIP;	//å°ç²¾éˆä¸Šå˜´å”‡è·Ÿxè»¸å¤¾è§’
+	private int bodyAngle = BODY_ANGLE;//å°ç²¾éˆå¾upperLipé–‹å§‹ç®—çš„è§’åº¦(ç‚ºäº†å¾upperLipé–‹å§‹é€†æ™‚é‡ç•«å‡ºå°ç²¾éˆèº«é«”)
 	private double theta = 0;
 	double temp = 0;
-	double speed = 2;	//²¾°Ê³t«×(¼È©wspeed¡A¥Ø«e²¾°Ê§@ªk¬° x+=speed³oºØ¡Aµøµ¡resize´N·|¼vÅT²¾°Ê³t«×)
-	double mouthMotionSpeed = 4;//¤pºëÆF¼L¤Ú¶}¦X³t«×(§@ªk¸ò¤W­±Ãş¦ü¡A°İÃD¤]¤@¼Ë)
+	double speed = 2;	//ç§»å‹•é€Ÿåº¦(æš«å®šspeedï¼Œç›®å‰ç§»å‹•ä½œæ³•ç‚º x+=speedé€™ç¨®ï¼Œè¦–çª—resizeå°±æœƒå½±éŸ¿ç§»å‹•é€Ÿåº¦)
+	double mouthMotionSpeed = 4;//å°ç²¾éˆå˜´å·´é–‹åˆé€Ÿåº¦(ä½œæ³•è·Ÿä¸Šé¢é¡ä¼¼ï¼Œå•é¡Œä¹Ÿä¸€æ¨£)
 	//int bigW, bigH;
 	public Pacman()
 	{
@@ -25,9 +25,9 @@ class Pacman extends GameObject
 		// bigH = height*50;
 		img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		g2d = img.createGraphics();
-		g2d.setBackground(transparent);//Color4°Ñ¼Æ¡A³Ì«á¤@­Ó¬OAlpha
+		g2d.setBackground(transparent);//Color4åƒæ•¸ï¼Œæœ€å¾Œä¸€å€‹æ˜¯Alpha
 		g2d.setColor(Color.yellow);
-		g2d.fillArc(0, 0, width, height, upperLip, bodyAngle);//µe¥X¤pºëÆF
+		g2d.fillArc(0, 0, width, height, upperLip, bodyAngle);//ç•«å‡ºå°ç²¾éˆ
 		setPriority(Priority.PACMAN);
 		
 		symbol = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -35,9 +35,9 @@ class Pacman extends GameObject
 		g.fillOval(0, 0, width, height);
 		setId(Number.PACMAN);
 	}
-	public void drawPacman()//­«µe¤pºëÆF(§ï¤è¦V©M¼L¤Ú±i¶}¨¤«×)
+	public void drawPacman()//é‡ç•«å°ç²¾éˆ(æ”¹æ–¹å‘å’Œå˜´å·´å¼µé–‹è§’åº¦)
 	{
-		double t = theta;	// Á×§Ktheta¶Ã±¼(thetaªº§ïÅÜ©M¦¹¨ç¦¡¥X²{¦b¤£¦Pthread)
+		double t = theta;	// é¿å…thetaäº‚æ‰(thetaçš„æ”¹è®Šå’Œæ­¤å‡½å¼å‡ºç¾åœ¨ä¸åŒthread)
 		g2d.clearRect(0, 0, width, height);
 		g2d.rotate(t, width/2, height/2);
 		g2d.fillArc(0, 0, width, height, upperLip, bodyAngle);
@@ -48,7 +48,7 @@ class Pacman extends GameObject
 	{
 		direction = d;
 		
-		switch(d) //Âà¼L¤Úªº¨¤«×
+		switch(d) //è½‰å˜´å·´çš„è§’åº¦
 		{
 			case UP:
 				theta = -90.0/180*Math.PI;
@@ -130,7 +130,7 @@ class Pacman extends GameObject
 		rect.setBounds(x, y, width, height);
 		gscontrol.pacPosUpdate(x+width/2, y+height/2);
 	}
-	public boolean dying() //¦º±¼ªº°Êµe¡A°ÊµeÁÙ¨Sµ²§ô´Nreturn true¡A°Êµeµ²§ô¤F´Nreturn false
+	public boolean dying() //æ­»æ‰çš„å‹•ç•«ï¼Œå‹•ç•«é‚„æ²’çµæŸå°±return trueï¼Œå‹•ç•«çµæŸäº†å°±return false
 	{
 		mouthMotionSpeed = 4;
 		bodyAngle -= mouthMotionSpeed;

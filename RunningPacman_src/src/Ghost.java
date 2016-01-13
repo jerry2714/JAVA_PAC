@@ -4,18 +4,18 @@ import javax.imageio.*;
 import java.io.*;
 import java.awt.image.*;
 import java.util.*;
-import java.time.*;
+//import java.time.*;
 
-//«ÕÆF
+//å¹½éˆ
 class Ghost extends GameObject
 {
-	private static BufferedImage bodyImage;	//¨­Åé¼Ë¹Ï
-	private static BufferedImage eye;	//²´·ú
-	private static BufferedImage eyeWhite;	//²´¥Õ
-	private static BufferedImage scared1;//³QÀ~¨ìªº¹Ï
+	private static BufferedImage bodyImage;	//èº«é«”æ¨£åœ–
+	private static BufferedImage eye;	//çœ¼ç›
+	private static BufferedImage eyeWhite;	//çœ¼ç™½
+	private static BufferedImage scared1;//è¢«åš‡åˆ°çš„åœ–
 	private static BufferedImage scared2;
-	private BufferedImage body;	//¨­Åé
-	//img = §¹¾ãªºghost = ¨­Åé¥[²´·ú
+	private BufferedImage body;	//èº«é«”
+	//img = å®Œæ•´çš„ghost = èº«é«”åŠ çœ¼ç›
 	
 	double temp;
 	double speed;
@@ -65,7 +65,7 @@ class Ghost extends GameObject
 		speed = COMMON_SPEED;
 		
 		
-		//µ¹·s¨Óªº«ÕÆF·sªºÃC¦â
+		//çµ¦æ–°ä¾†çš„å¹½éˆæ–°çš„é¡è‰²
 		int color;
 		do{
 			int i;
@@ -120,7 +120,7 @@ class Ghost extends GameObject
 				g2d.drawImage(body, 0, 0, this);
 			else
 				g2d.drawImage(eyeWhite, 0, 0, this);
-			switch(d)	//´«¤è¦V¦P®É§ó·s²´·úªº¦ì¸m
+			switch(d)	//æ›æ–¹å‘åŒæ™‚æ›´æ–°çœ¼ç›çš„ä½ç½®
 			{
 				case UP:
 					g2d.drawImage(eye, 112, 146, this);
@@ -175,7 +175,7 @@ class Ghost extends GameObject
 		}
 		else
 			speed = COMMON_SPEED;
-		if(sc.isEscaping)	//ÅÜ´«¤è¦V
+		if(sc.isEscaping)	//è®Šæ›æ–¹å‘
 		{
 			if(ran.nextInt(25) == 1)	
 			{
@@ -249,26 +249,26 @@ class Ghost extends GameObject
 		
 		int count = 0;
 		byte imageNumber;
-		Duration d = Duration.ofSeconds(10);
-		Instant i1;
-		Instant i2;
+		//Duration d = Duration.ofSeconds(10);
+		long i1;
+		long i2;
 		boolean start = false;
 		public boolean scaredReact()
 		{
 			if(!start)
 			{
-				i1 = i1.now();
+				i1 = System.nanoTime();
 				imageNumber = 1;
 				start = true;
 				setPriority(Priority.SHOCKED_GHOST);
 				count = 0;
 				switchImage();
 			}
-			i2 = i2.now();
-			if(i2.minus(Duration.ofSeconds(1)).isAfter(i1))
+			i2 = System.nanoTime();
+			if(i2-i1 >= 1000000000)
 			{	
 				count++;
-				i1 = i1.now();
+				i1 = System.nanoTime();
 				switchImage();
 			}
 			
@@ -301,7 +301,7 @@ class Ghost extends GameObject
 		{
 			if(!start)
 			{
-				i1 = i1.now();
+				i1 = System.nanoTime();
 				start = true;
 				setPriority(Priority.ESCAPING_GHOST);
 				count = 0;
@@ -314,11 +314,11 @@ class Ghost extends GameObject
 				g2d.drawImage(eyeWhite, 0, 0, null);
 				setDirection(direction);
 			}
-			i2 = i2.now();
-			if(i2.minus(Duration.ofSeconds(1)).isAfter(i1))
+			i2 = System.nanoTime();
+			if(i2-i1 >= 1000000000)
 			{	
 				count++;
-				i1 = i1.now();
+				i1 = System.nanoTime();
 			}
 			if(count == 6)
 			{

@@ -2,11 +2,11 @@ import java.awt.*;
 interface Initialize	
 {
 	public void init();
-	public void setFrameSize(int width, int height);//¬°¤F¨ÏÃ¸¹Ï°Ï¤j¤p¦bµ{¦¡¶}©l®É¸òµøµ¡¤@­P(¥@¬É³Â·Ğ¡A¥Ø«e·Q¤£¨ì¦n¤@ÂIªº¤èªk)
+	public void setFrameSize(int width, int height);//ç‚ºäº†ä½¿ç¹ªåœ–å€å¤§å°åœ¨ç¨‹å¼é–‹å§‹æ™‚è·Ÿè¦–çª—ä¸€è‡´(ä¸–ç•Œéº»ç…©ï¼Œç›®å‰æƒ³ä¸åˆ°å¥½ä¸€é»çš„æ–¹æ³•)
 }
-interface General	//³q¥Î±`¼Æ
+interface General	//é€šç”¨å¸¸æ•¸
 {
-	Color transparent = new Color(0, 0, 0, 0);//³z©ú¦â
+	Color transparent = new Color(0, 0, 0, 0);//é€æ˜è‰²
 	GameStateControl gscontrol = new GameStateControl();
 	
 	enum Number{PACMAN, GHOST, DOT, POWER_PELLET}

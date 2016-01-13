@@ -1,9 +1,9 @@
-class GameStateControl	//¥şÅéª¬ºA¥H¤Î¦UºØª¬ºA¬d¬İ¡B¤Á´«µ¥µ¥¤èªk¡A
-{                        //interface General¸Ì·|¦³¤@­Óinstance¨Ñ©Ò¹CÀ¸¬ÛÃöªÌ¨Ï¥Î
+class GameStateControl	//å…¨é«”ç‹€æ…‹ä»¥åŠå„ç¨®ç‹€æ…‹æŸ¥çœ‹ã€åˆ‡æ›ç­‰ç­‰æ–¹æ³•ï¼Œ
+{                        //interface Generalè£¡æœƒæœ‰ä¸€å€‹instanceä¾›æ‰€éŠæˆ²ç›¸é—œè€…ä½¿ç”¨
 	public int score;
 	public int life;
-	public enum GameState{COMMON, GAME_OVER, GAME_PAUSE}//¹CÀ¸¥»Åéª¬ºA
-	public enum PacmanState{COMMON, KILLED, RETRIVE}//¤pºëÆFª¬ºA
+	public enum GameState{COMMON, GAME_OVER, GAME_PAUSE}//éŠæˆ²æœ¬é«”ç‹€æ…‹
+	public enum PacmanState{COMMON, KILLED, RETRIVE}//å°ç²¾éˆç‹€æ…‹
 	
 	
 	public GameState game;
@@ -24,7 +24,7 @@ class GameStateControl	//¥şÅéª¬ºA¥H¤Î¦UºØª¬ºA¬d¬İ¡B¤Á´«µ¥µ¥¤èªk¡A
 		oneMoreGhost = false;
 	}
 	
-	//¹CÀ¸¼È°±¨t¦C
+	//éŠæˆ²æš«åœç³»åˆ—
 	public void pause(){game = GameState.GAME_PAUSE;}
 	public boolean isPause()
 	{
@@ -35,7 +35,7 @@ class GameStateControl	//¥şÅéª¬ºA¥H¤Î¦UºØª¬ºA¬d¬İ¡B¤Á´«µ¥µ¥¤èªk¡A
 	}
 	public void resume(){game = GameState.COMMON;}
 	
-	//°­ªø¤ÓÁà³Q¦Û¤vÀ~¨ì¨t¦C
+	//é¬¼é•·å¤ªé†œè¢«è‡ªå·±åš‡åˆ°ç³»åˆ—
 	public void ghostShock()
 	{
 		if(ghostStateSwitch)
@@ -45,7 +45,7 @@ class GameStateControl	//¥şÅéª¬ºA¥H¤Î¦UºØª¬ºA¬d¬İ¡B¤Á´«µ¥µ¥¤èªk¡A
 	}
 	
 	
-	//¤pºëÆF¨t¦C
+	//å°ç²¾éˆç³»åˆ—
 	public void pacmanKilled(){pac = PacmanState.KILLED;}
 	public boolean pacmanIsKilled()
 	{

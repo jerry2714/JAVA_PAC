@@ -7,8 +7,8 @@ import java.util.*;
 class StartMenu extends Panel implements KeyListener, MouseMotionListener, MouseListener
 {
 	
-	TheButton startBtn = new TheButton("¶}©l", null, null, Color.yellow);
-	TheButton exitBtn = new TheButton("Â÷¶}", null, null, Color.yellow);
+	TheButton startBtn = new TheButton("é–‹å§‹", null, null, Color.yellow);
+	TheButton exitBtn = new TheButton("é›¢é–‹", null, null, Color.yellow);
 	int frameWidth, frameHeight;
 	public StartMenu()
 	{
@@ -50,8 +50,8 @@ class StartMenu extends Panel implements KeyListener, MouseMotionListener, Mouse
 class GameOptionMenu extends Panel implements KeyListener, MouseMotionListener, MouseListener
 {
 	static Font font = new Font("", Font.BOLD, 16);
-	TheButton resumetBtn = new TheButton("Ä~Äò", font, null);
-	TheButton exitBtn = new TheButton("µ²§ô¹CÀ¸", font, null);
+	TheButton resumetBtn = new TheButton("ç¹¼çºŒ", font, null);
+	TheButton exitBtn = new TheButton("çµæŸéŠæˆ²", font, null);
 	int frameWidth, frameHeight;
 	public GameOptionMenu()
 	{
@@ -83,8 +83,8 @@ class GameOptionMenu extends Panel implements KeyListener, MouseMotionListener, 
 class TheButton extends GameObject implements MouseListener
 {
 	String str;
-	//String exit = "Â÷¶}";
-	Font font = new Font("¼Ğ·¢Åé", Font.BOLD, 32);
+	//String exit = "é›¢é–‹";
+	Font font = new Font("æ¨™æ¥·é«”", Font.BOLD, 32);
 	Color bgColor = Color.gray;
 	Color textColor = Color.black;
 	
@@ -125,22 +125,22 @@ class TheButton extends GameObject implements MouseListener
 		int stringLen = (int) g.getFontMetrics().getStringBounds(str, g).getWidth();
 		int stringHi = (int) g.getFontMetrics().getStringBounds(str, g).getHeight();
         int x = getWidth()/2 - stringLen/2;
-        int y = getHeight()/2 + stringHi/3; // ³oÃä/3¬İ°_¨Ó¤ñ/2ÁÙ¹³¬O¸m¤¤¡A­ì¦]¥¼ª¾
+        int y = getHeight()/2 + stringHi/3; // é€™é‚Š/3çœ‹èµ·ä¾†æ¯”/2é‚„åƒæ˜¯ç½®ä¸­ï¼ŒåŸå› æœªçŸ¥
         g.drawString(str, x, y);
 	}
 	public void mouseClicked (MouseEvent e)
 	{
-		if(str.equals("Â÷¶}"))
+		if(str.equals("é›¢é–‹"))
 			RunningPacman.exit();
-		else if(str.equals("¶}©l"))
+		else if(str.equals("é–‹å§‹"))
 		{
 			RunningPacman.gameStart();
 		}
-		else if(str.equals("Ä~Äò"))
+		else if(str.equals("ç¹¼çºŒ"))
 		{
 			RunningPacman.game.gamePauseSwitch();
 		}
-		else if(str.equals("µ²§ô¹CÀ¸"))
+		else if(str.equals("çµæŸéŠæˆ²"))
 		{
 			RunningPacman.show("StartMenu");
 			RunningPacman.game.gameExit();

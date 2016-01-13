@@ -5,16 +5,16 @@ import java.awt.image.*;
 
 class GameCanvas extends Canvas implements Initialize
 {
-	private static BufferedImage img = null;//Ã¸¹Ï¥Î
-	private static Graphics2D g2d;//imgªºGraphic context
-	public static int frameWidth, frameHeight;	//¥iÃ¸¹Ï°Ï¤j¤p
+	private static BufferedImage img = null;//ç¹ªåœ–ç”¨
+	private static Graphics2D g2d;//imgçš„Graphic context
+	public static int frameWidth, frameHeight;	//å¯ç¹ªåœ–å€å¤§å°
 	
 	public void setFrameSize(int width, int height)
 	{
 		frameWidth = width;
 		frameHeight = height;
 	}
-	public void init()//ªì©l¤Æ¡A¶}©l¨Ï¥Î«e¥²¶·©I¥s
+	public void init()//åˆå§‹åŒ–ï¼Œé–‹å§‹ä½¿ç”¨å‰å¿…é ˆå‘¼å«
 	{
 		img = new BufferedImage(frameWidth, frameHeight, BufferedImage.TYPE_INT_ARGB);
 		g2d = img.createGraphics();
@@ -22,7 +22,7 @@ class GameCanvas extends Canvas implements Initialize
 	}
 	public int getCanvasWidth(){return getWidth();}
 	public int getCanvasHeight(){return getHeight();}
-	public void paintCanvas(Graphics g){}//Åı©Ò¦³¤lÃş§O¹ïg2d¶i¦æ¾Ş§@(Ã¸¹Ï)
+	public void paintCanvas(Graphics g){}//è®“æ‰€æœ‰å­é¡åˆ¥å°g2dé€²è¡Œæ“ä½œ(ç¹ªåœ–)
 
 	public void update(Graphics g)
 	{	
